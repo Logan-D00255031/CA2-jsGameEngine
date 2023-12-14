@@ -45,7 +45,7 @@ class Renderer extends Component {
           }
           this.newCtx.restore();
 
-          ctx.drawImage(this.newCanvas, 0, 0, w, h);
+          ctx.drawImage(this.newCanvas, x, y, w, h);
         }
         else {
           ctx.drawImage(this.image, x, y, w, h);
@@ -95,16 +95,3 @@ class Renderer extends Component {
 
 // The Renderer class is then exported as the default export of this module.
 export default Renderer;
-
-this.newCanvas = document.createElement("canvas");
-          this.newCanvas.width = w;
-          this.newCanvas.height = h;
-          this.newCtx = this.newCanvas.getContext("2d");
-          this.newCtx.save();
-          this.newCtx.translate( w/2, h/2 );
-          this.newCtx.rotate(this.rotation*Math.PI/180);
-          this.newCtx.translate( -w/2, -h/2 );
-          this.newCtx.drawImage(this.image, 0, 0, h, h);
-          this.newCtx.restore();
-
-          ctx.drawImage(this.newCanvas, 0, 0, w, h);

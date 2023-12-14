@@ -14,7 +14,7 @@ class Player extends GameObject {
   // Constructor initializes the game object and add necessary components
   constructor(x, y) {
     super(x, y); // Call parent's constructor
-    this.renderer = new Renderer('blue', 50, 50, Images.player, 45); // Add renderer
+    this.renderer = new Renderer('blue', 50, 50, Images.player, 0); // Add renderer
     this.addComponent(this.renderer);
     this.addComponent(new Physics({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 1000 })); // Add physics
     this.addComponent(new Input()); // Add input for handling user input
@@ -47,7 +47,9 @@ class Player extends GameObject {
       physics.velocity.x = -300;
       this.direction = 1;
     } else if (!this.isGamepadMovement && input.isKeyDown('KeyW')) {
-      this.renderer.rotation += 1;
+      this.renderer.rotation += 2;
+    } else if (!this.isGamepadMovement && input.isKeyDown('KeyS')) {
+      this.renderer.rotation -= 2;
     } else if (!this.isGamepadMovement) {
       physics.velocity.x = 0;
     }

@@ -19,7 +19,7 @@ class RotationRenderer extends Renderer {
       const w = this.width;
       const h = this.height;
       // If a rotaion value is provided, rotate the game object the specified degrees.
-      if (this.rotation > 0) {
+      if (this.rotation != null) {
         // Create a new canvas the size of the image and create a context from it,
         // Use that context to rotate the image in its centre and draw it on the new canvas,
         // Then use that canvas as the image to draw on the game canvas.
@@ -29,18 +29,12 @@ class RotationRenderer extends Renderer {
         this.newCtx = this.newCanvas.getContext("2d");
         this.newCtx.save();
         this.newCtx.translate( w/2, h/2 );
-        this.newCtx.rotate(this.rotation*Math.PI/180);
+        this.newCtx.rotate(Math.abs(this.rotation)*Math.PI/180);
         this.newCtx.translate( -w/2, -h/2 );
-        // Draw the image as a square of the largest side to make sure the rotated image fits.
-        if(w > h) {
-          this.newCtx.drawImage(this.image, 0, 0, w, w);
-        }
-        else {
-          this.newCtx.drawImage(this.image, 0, 0, h, h);
-        }
+        this.newCtx.drawImage(this.image, 0, 0, h, h);
         this.newCtx.restore();
 
-         ctx.drawImage(this.newCanvas, 0, 0, w, h);
+        ctx.drawImage(this.newCanvas, 0, 0, w, h);
       }
       else {
         ctx.drawImage(this.image, x, y, w, h);
@@ -50,7 +44,7 @@ class RotationRenderer extends Renderer {
       ctx.save();
       ctx.fillStyle = this.color;
       // If a rotaion value is provided, rotate the game object the specified degrees.
-      if (this.rotation > 0) {
+      if (this.rotation != 0) {
         ctx.rotate(this.rotation*Math.PI/180);
       }
       ctx.fillRect(this.gameObject.x, this.gameObject.y, this.width, this.height);
