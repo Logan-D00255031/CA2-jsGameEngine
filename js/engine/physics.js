@@ -49,42 +49,50 @@ class Physics extends Component {
 
   // Check to see if the GameObject is colliding with another GameObject on the left.
   isCollidingLeft(otherPhysics) {
-    // Get the bounding boxes of both game objects.
-    const [left, right, top, bottom] = this.getBoundingBox();
+    // Get the Renderer component of the game object to get its width and height.
+    const renderer = this.gameObject.getComponent(Renderer);
+    // Get the bounding box of other game object.
     const [otherLeft, otherRight, otherTop, otherBottom] = otherPhysics.getBoundingBox();
-    
-    // Check if the bounding boxes will overlap on the next frame. If they do, return true.
-    return left + (this.velocity.x * this.deltaTime) < otherRight && right > otherLeft && top < otherBottom && bottom > otherTop;
+
+    if (this.velocity.x > 0) {
+      return this.isColliding(otherPhysics) && this.gameObject.oldX >= otherRight;
+    }
   }
 
   // Check to see if the GameObject is colliding with another GameObject on the right.
   isCollidingRight(otherPhysics) {
-    // Get the bounding boxes of both game objects.
-    const [left, right, top, bottom] = this.getBoundingBox();
+    // Get the Renderer component of the game object to get its width and height.
+    const renderer = this.gameObject.getComponent(Renderer);
+    // Get the bounding box of other game object.
     const [otherLeft, otherRight, otherTop, otherBottom] = otherPhysics.getBoundingBox();
 
-    // Check if the bounding boxes will overlap on the next frame. If they do, return true.
-    return left < otherRight && right + (this.velocity.x * this.deltaTime) > otherLeft && top < otherBottom && bottom > otherTop;
+    if (this.velocity.x < 0) {
+      return this.isColliding(otherPhysics) && this.gameObject.oldX + renderer.width <= otherLeft;
+    }
   }
 
   // Check to see if the GameObject is colliding with another GameObject on the top.
   isCollidingTop(otherPhysics) {
-    // Get the bounding boxes of both game objects.
-    const [left, right, top, bottom] = this.getBoundingBox();
+    // Get the Renderer component of the game object to get its width and height.
+    const renderer = this.gameObject.getComponent(Renderer);
+    // Get the bounding box of other game object.
     const [otherLeft, otherRight, otherTop, otherBottom] = otherPhysics.getBoundingBox();
 
-    // Check if the bounding boxes will overlap on the next frame. If they do, return true.
-    return left < otherRight && right > otherLeft && top + (this.velocity.y * this.deltaTime) < otherBottom && bottom > otherTop;
+    if (this.velocity.y < 0) {
+      return this.isColliding(otherPhysics) && this.gameObject.oldY >= otherBottom;
+    }
   }
   
   // Check to see if the GameObject is colliding with another GameObject on the bottom.
   isCollidingBottom(otherPhysics) {
-    // Get the bounding boxes of both game objects.
-    const [left, right, top, bottom] = this.getBoundingBox();
+    // Get the Renderer component of the game object to get its width and height.
+    const renderer = this.gameObject.getComponent(Renderer);
+    // Get the bounding box of other game object.
     const [otherLeft, otherRight, otherTop, otherBottom] = otherPhysics.getBoundingBox();
 
-    // Check if the bounding boxes will overlap on the next frame. If they do, return true.
-    return left < otherRight && right > otherLeft && top < otherBottom && bottom + (this.velocity.y * this.deltaTime) > otherTop;
+    if (this.velocity.y > 0) {
+      return this.isColliding(otherPhysics) && (this.gameObject.oldY + renderer.height <= otherTop);
+    }
   }
 
 }

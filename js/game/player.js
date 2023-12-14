@@ -94,7 +94,7 @@ class Player extends GameObject {
     this.isOnPlatform = false;  // Reset this before checking collisions with platforms
     const platforms = this.game.gameObjects.filter((obj) => obj instanceof Platform);
     for (const platform of platforms) {
-      if (!physics.isColliding(platform.getComponent(Physics))) {
+      
         if (physics.isCollidingRight(platform.getComponent(Physics))) {
           physics.velocity.x = 0;
           physics.acceleration.x = 0;
@@ -110,7 +110,7 @@ class Player extends GameObject {
         if (physics.isCollidingTop(platform.getComponent(Physics))) {
           physics.velocity.y = 0;
           physics.acceleration.y = 0;
-          this.y = platform.y + 10;
+          this.y = platform.y + platform.getComponent(Renderer).height;
           console.log("Colliding on top")
         } 
         if (physics.isCollidingBottom(platform.getComponent(Physics))) {
@@ -120,7 +120,7 @@ class Player extends GameObject {
           this.isOnPlatform = true;
           console.log("Colliding on bottom")
         }
-      }
+      
       if (physics.isColliding(platform.getComponent(Physics))) {
         if (!this.isJumping) {
           //physics.velocity.y = 0;
@@ -131,7 +131,7 @@ class Player extends GameObject {
       }
     }
 
-    console.log(physics.velocity.y);
+    //console.log(physics.velocity.y);
 
     if(this.isOnPlatform)
     {
@@ -156,7 +156,16 @@ class Player extends GameObject {
       location.reload();
     }
 
+    this.oldX = this.x;
+    this.oldY = this.y;
+
+    console.log(this.oldX);
+    console.log(this.oldY);
+    
     super.update(deltaTime);
+
+    console.log(this.y);
+    console.log(this.x);
   }
 
   handleGamepadInput(input){
@@ -255,6 +264,7 @@ class Player extends GameObject {
     this.score = 0;
     this.resetPlayerState();
   }
+  
 }
 
 export default Player;

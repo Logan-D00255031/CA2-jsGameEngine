@@ -53,19 +53,20 @@ class Renderer extends Component {
         // Then use that canvas as the image to draw on the game canvas.
         // Learned from Youtube video: https://youtu.be/uNkFZWp4ywg?si=uM-H83LCc2wu3xIW
         // --- NOT WORKING ---
-        this.newCanvas = document.createElement("canvas");
-        this.newCanvas.width = w;
-        this.newCanvas.height = h;
-        this.newCtx = this.newCanvas.getContext("2d");
-        this.newCtx.save();
-        this.newCtx.translate( w/2, h/2 );
-        this.newCtx.rotate(this.rotation*Math.PI/180);
-        this.newCtx.translate( -w/2, -h/2 );
-        this.newCtx.fillStyle = this.color;
-        this.newCtx.fillRect(x, y, w, h);
-        this.newCtx.restore();
 
-        ctx.drawImage(this.newCanvas, x, y, w, h);
+        //this.newCanvas = document.createElement("canvas");
+        //this.newCanvas.width = w;
+        //this.newCanvas.height = h;
+        //this.newCtx = this.newCanvas.getContext("2d");
+        //this.newCtx.save();
+        //this.newCtx.translate( w/2, h/2 );
+        //this.newCtx.rotate(this.rotation*Math.PI/180);
+        //this.newCtx.translate( -w/2, -h/2 );
+        //this.newCtx.fillStyle = this.color;
+        //this.newCtx.fillRect(x, y, w, h);
+        //this.newCtx.restore();
+
+        //ctx.drawImage(this.newCanvas, x, y, w, h);
       }
     } else {
       // If an image is provided and it has finished loading, draw the image.
