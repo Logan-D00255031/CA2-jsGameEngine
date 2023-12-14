@@ -54,7 +54,10 @@ class Physics extends Component {
     // Get the bounding box of other game object.
     const [otherLeft, otherRight, otherTop, otherBottom] = otherPhysics.getBoundingBox();
 
-    if (this.velocity.x > 0) {
+    // Check if the GameObjects are currently colliding.
+    // And the GameObject that called this function was heading towards the other from the right.
+    // If it was, return true. If not, return false.
+    if (this.velocity.x < 0) {
       return this.isColliding(otherPhysics) && this.gameObject.oldX >= otherRight;
     }
   }
@@ -66,7 +69,10 @@ class Physics extends Component {
     // Get the bounding box of other game object.
     const [otherLeft, otherRight, otherTop, otherBottom] = otherPhysics.getBoundingBox();
 
-    if (this.velocity.x < 0) {
+    // Check if the GameObjects are currently colliding.
+    // And the GameObject that called this function was heading towards the other from the left.
+    // If it was, return true. If not, return false.
+    if (this.velocity.x > 0) {
       return this.isColliding(otherPhysics) && this.gameObject.oldX + renderer.width <= otherLeft;
     }
   }
@@ -78,6 +84,9 @@ class Physics extends Component {
     // Get the bounding box of other game object.
     const [otherLeft, otherRight, otherTop, otherBottom] = otherPhysics.getBoundingBox();
 
+    // Check if the GameObjects are currently colliding.
+    // And the GameObject that called this function was heading towards the other from the bottom.
+    // If it was, return true. If not, return false.
     if (this.velocity.y < 0) {
       return this.isColliding(otherPhysics) && this.gameObject.oldY >= otherBottom;
     }
@@ -90,6 +99,9 @@ class Physics extends Component {
     // Get the bounding box of other game object.
     const [otherLeft, otherRight, otherTop, otherBottom] = otherPhysics.getBoundingBox();
 
+    // Check if the GameObjects are currently colliding.
+    // And the GameObject that called this function was heading towards the other from the top.
+    // If it was, return true. If not, return false.
     if (this.velocity.y > 0) {
       return this.isColliding(otherPhysics) && (this.gameObject.oldY + renderer.height <= otherTop);
     }

@@ -41,21 +41,26 @@ class Player extends GameObject {
     
     // Handle player movement
     if (!this.isGamepadMovement && input.isKeyDown('KeyD')) {
-      physics.velocity.x = 300;
+      //physics.velocity.x = 300;
+      physics.acceleration.x = 300;
       this.direction = -1;
     } else if (!this.isGamepadMovement && input.isKeyDown('KeyA')) {
-      physics.velocity.x = -300;
+      //physics.velocity.x = -300;
+      physics.acceleration.x = -300;
       this.direction = 1;
     } else if (!this.isGamepadMovement) {
-      physics.velocity.x = 0;
+      //physics.velocity.x = 0;
+      physics.acceleration.x = 0;
     }
 
+    // Handle player rotation
     if (!this.isGamepadMovement && input.isKeyDown('KeyS')) {
       this.renderer.rotation -= 3;
     } else if (!this.isGamepadMovement && input.isKeyDown('KeyW')) {
       this.renderer.rotation += 3;
     }
 
+    // Handle player upward acceleration
     if (!this.isGamepadMovement && input.isKeyDown('ArrowUp')) {
       physics.acceleration.y = -2000;
     } else {
@@ -94,40 +99,34 @@ class Player extends GameObject {
     this.isOnPlatform = false;  // Reset this before checking collisions with platforms
     const platforms = this.game.gameObjects.filter((obj) => obj instanceof Platform);
     for (const platform of platforms) {
-      
-        if (physics.isCollidingRight(platform.getComponent(Physics))) {
-          physics.velocity.x = 0;
-          physics.acceleration.x = 0;
-          this.x = platform.x;
-          console.log("Colliding on left")
-        } 
-        if (physics.isCollidingLeft(platform.getComponent(Physics))) {
-          physics.velocity.x = 0;
-          physics.acceleration.x = 0;
-          this.x = platform.x - this.renderer.width;
-          console.log("Colliding on left")
-        } 
+      // Check for collision on the right of the player
+      if (physics.isCollidingRight(platform.getComponent(Physics))) {
+        physics.velocity.x = 0;
+        physics.acceleration.x = 0;
+        this.x = platform.x - this.renderer.width;
+        console.log("Colliding on right")
+      } 
+      // Check for collision on the left of the player
+      if (physics.isCollidingLeft(platform.getComponent(Physics))) {
+        physics.velocity.x = 0;
+        physics.acceleration.x = 0;
+        this.x = platform.x + platform.getComponent(Renderer).width;
+        console.log("Colliding on left")
+      } 
+      // Check for collision on the top of the player
         if (physics.isCollidingTop(platform.getComponent(Physics))) {
-          physics.velocity.y = 0;
-          physics.acceleration.y = 0;
-          this.y = platform.y + platform.getComponent(Renderer).height;
-          console.log("Colliding on top")
-        } 
-        if (physics.isCollidingBottom(platform.getComponent(Physics))) {
-          physics.velocity.y = 0;
-          physics.acceleration.y = 0;
-          this.y = platform.y - this.renderer.height;
-          this.isOnPlatform = true;
-          console.log("Colliding on bottom")
-        }
-      
-      if (physics.isColliding(platform.getComponent(Physics))) {
-        if (!this.isJumping) {
-          //physics.velocity.y = 0;
-          //physics.acceleration.y = 0;
-          //his.y = platform.y - this.renderer.height;
-          //this.isOnPlatform = true;
-        }
+        physics.velocity.y = 0;
+        physics.acceleration.y = 0;
+        this.y = platform.y + platform.getComponent(Renderer).height;
+        console.log("Colliding on top")
+      } 
+      // Check for collision on the bottom of the player
+      if (physics.isCollidingBottom(platform.getComponent(Physics))) {
+        physics.velocity.y = 0;
+        physics.acceleration.y = 0;
+        this.y = platform.y - this.renderer.height;
+        this.isOnPlatform = true;
+        console.log("Colliding on bottom")
       }
     }
 
@@ -156,16 +155,18 @@ class Player extends GameObject {
       location.reload();
     }
 
+    // Log player position before next update
+    // Used when handling collisions
     this.oldX = this.x;
     this.oldY = this.y;
 
-    console.log(this.oldX);
-    console.log(this.oldY);
+    //console.log(this.oldX);
+    //console.log(this.oldY);
     
     super.update(deltaTime);
 
-    console.log(this.y);
-    console.log(this.x);
+    //console.log(this.y);
+    //console.log(this.x);
   }
 
   handleGamepadInput(input){
