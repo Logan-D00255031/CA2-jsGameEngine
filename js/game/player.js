@@ -16,7 +16,7 @@ class Player extends GameObject {
     super(x, y); // Call parent's constructor
     this.renderer = new Renderer('blue', 50, 50, Images.player, 0); // Add renderer
     this.addComponent(this.renderer);
-    this.addComponent(new Physics({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 1000 })); // Add physics
+    this.addComponent(new Physics({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 })); // Add physics
     this.addComponent(new Input()); // Add input for handling user input
     // Initialize all the player specific properties
     this.direction = 1;
@@ -94,17 +94,44 @@ class Player extends GameObject {
     this.isOnPlatform = false;  // Reset this before checking collisions with platforms
     const platforms = this.game.gameObjects.filter((obj) => obj instanceof Platform);
     for (const platform of platforms) {
-      if (physics.isColliding(platform.getComponent(Physics))) {
-        if (!this.isJumping) {
+      if (!physics.isColliding(platform.getComponent(Physics))) {
+        if (physics.isCollidingRight(platform.getComponent(Physics))) {
+          physics.velocity.x = 0;
+          physics.acceleration.x = 0;
+          this.x = platform.x;
+          console.log("Colliding on left")
+        } 
+        if (physics.isCollidingLeft(platform.getComponent(Physics))) {
+          physics.velocity.x = 0;
+          physics.acceleration.x = 0;
+          this.x = platform.x - this.renderer.width;
+          console.log("Colliding on left")
+        } 
+        if (physics.isCollidingTop(platform.getComponent(Physics))) {
+          physics.velocity.y = 0;
+          physics.acceleration.y = 0;
+          this.y = platform.y + 10;
+          console.log("Colliding on top")
+        } 
+        if (physics.isCollidingBottom(platform.getComponent(Physics))) {
           physics.velocity.y = 0;
           physics.acceleration.y = 0;
           this.y = platform.y - this.renderer.height;
           this.isOnPlatform = true;
+          console.log("Colliding on bottom")
+        }
+      }
+      if (physics.isColliding(platform.getComponent(Physics))) {
+        if (!this.isJumping) {
+          //physics.velocity.y = 0;
+          //physics.acceleration.y = 0;
+          //his.y = platform.y - this.renderer.height;
+          //this.isOnPlatform = true;
         }
       }
     }
 
-    // if ( right - physics.velocity.x < otherright)
+    console.log(physics.velocity.y);
 
     if(this.isOnPlatform)
     {
@@ -114,7 +141,7 @@ class Player extends GameObject {
     }
   
     // Check if player has fallen off the bottom of the screen
-    if (this.y > this.game.canvas.height) {
+    if (this.y > this.game.canvas.height + 1000) {
       this.resetPlayerState();
     }
 
