@@ -50,10 +50,18 @@ class Player extends GameObject {
       physics.velocity.x = 0;
     }
 
-    if(!this.isGamepadJump && input.isKeyDown('KeyS')) {
+    if (!this.isGamepadMovement && input.isKeyDown('KeyS')) {
       this.renderer.rotation -= 3;
     } else if (!this.isGamepadMovement && input.isKeyDown('KeyW')) {
       this.renderer.rotation += 3;
+    }
+
+    if (!this.isGamepadMovement && input.isKeyDown('ArrowUp')) {
+      physics.acceleration.y = -2000;
+    } else {
+      if (physics.acceleration.y < 0) {
+        physics.acceleration.y += 100;
+      }
     }
 
     // Handle player jumping
@@ -94,6 +102,15 @@ class Player extends GameObject {
           this.isOnPlatform = true;
         }
       }
+    }
+
+    // if ( right - physics.velocity.x < otherright)
+
+    if(this.isOnPlatform)
+    {
+      physics.gravity.y = 0;
+    } else {
+      physics.gravity.y = 1000;
     }
   
     // Check if player has fallen off the bottom of the screen
