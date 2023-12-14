@@ -46,12 +46,14 @@ class Player extends GameObject {
     } else if (!this.isGamepadMovement && input.isKeyDown('KeyA')) {
       physics.velocity.x = -300;
       this.direction = 1;
-    } else if (!this.isGamepadMovement && input.isKeyDown('KeyW')) {
-      this.renderer.rotation += 2;
-    } else if (!this.isGamepadMovement && input.isKeyDown('KeyS')) {
-      this.renderer.rotation -= 2;
     } else if (!this.isGamepadMovement) {
       physics.velocity.x = 0;
+    }
+
+    if(!this.isGamepadJump && input.isKeyDown('KeyS')) {
+      this.renderer.rotation -= 3;
+    } else if (!this.isGamepadMovement && input.isKeyDown('KeyW')) {
+      this.renderer.rotation += 3;
     }
 
     // Handle player jumping

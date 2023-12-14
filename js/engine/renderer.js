@@ -15,6 +15,7 @@ class Renderer extends Component {
 
   // The draw method handles rendering the game object on the canvas.
   draw(ctx) {
+    // If a rotaion value is provided, rotate the game object the specified degrees.
     if(this.rotation != null) {
       // If an image is provided and it has finished loading, draw the image.
       if (this.image && this.image.complete) {
@@ -24,10 +25,11 @@ class Renderer extends Component {
         const w = this.width;
         const h = this.height;
         // If a rotaion value is provided, rotate the game object the specified degrees.
-        if (this.rotation != 0) {
+        if (this.rotation != null) {
           // Create a new canvas the size of the image and create a context from it,
           // Use that context to rotate the image in its centre and draw it on the new canvas,
-          // Then use that canvas as the image to draw on the game canvas.
+          // Then use that new canvas as the image to draw on the game canvas.
+          // Learned from Youtube video: https://youtu.be/uNkFZWp4ywg?si=uM-H83LCc2wu3xIW
           this.newCanvas = document.createElement("canvas");
           this.newCanvas.width = w;
           this.newCanvas.height = h;
@@ -46,14 +48,24 @@ class Renderer extends Component {
         }
       } else {
         // If no image is provided or it has not finished loading, draw a rectangle with the specified color.
-        ctx.save();
-        ctx.fillStyle = this.color;
-        // If a rotaion value is provided, rotate the game object the specified degrees.
-        if (this.rotation != 0) {
-          ctx.rotate(this.rotation*Math.PI/180);
-        }
-        ctx.fillRect(this.gameObject.x, this.gameObject.y, this.width, this.height);
-        ctx.restore();
+        // Create a new canvas the size of the rectangle and create a context from it,
+        // Use that context to rotate the rectangle in its centre and draw it on the new canvas,
+        // Then use that canvas as the image to draw on the game canvas.
+        // Learned from Youtube video: https://youtu.be/uNkFZWp4ywg?si=uM-H83LCc2wu3xIW
+        // --- NOT WORKING ---
+        this.newCanvas = document.createElement("canvas");
+        this.newCanvas.width = w;
+        this.newCanvas.height = h;
+        this.newCtx = this.newCanvas.getContext("2d");
+        this.newCtx.save();
+        this.newCtx.translate( w/2, h/2 );
+        this.newCtx.rotate(this.rotation*Math.PI/180);
+        this.newCtx.translate( -w/2, -h/2 );
+        this.newCtx.fillStyle = this.color;
+        this.newCtx.fillRect(x, y, w, h);
+        this.newCtx.restore();
+
+        ctx.drawImage(this.newCanvas, x, y, w, h);
       }
     } else {
       // If an image is provided and it has finished loading, draw the image.
