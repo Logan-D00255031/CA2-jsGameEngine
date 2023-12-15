@@ -5,7 +5,8 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #ff0000; /* Red background color */
+    /*background-color: #ff0000; /* Red background color */
+    background-image: url("/resources/images/stars-background.jpg");
 }
 
 /* Add border to the canvas element */

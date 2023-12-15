@@ -2,6 +2,7 @@
 import Game from '../engine/game.js';
 import Player from './player.js';
 import Enemy from './enemy.js';
+import Enemy2 from './enemy2.js';
 import PlayerUI from './playerUI.js';
 import Platform from './platform.js';
 import Collectible from './collectible.js';
@@ -42,6 +43,7 @@ class Level extends Game {
       new Platform(9 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
       new Platform(10 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
       new Platform(5 * (platformWidth), this.canvas.height - platformWidth, 20, platformWidth),
+      new Platform(-1000, -500, 1000, 25),
     ];
     for (const platform of platforms) {
       this.addGameObject(platform);
@@ -51,6 +53,8 @@ class Level extends Game {
     this.addGameObject(new Enemy(50, this.canvas.height - 80));
     this.addGameObject(new Enemy(platformWidth + gap + 50, this.canvas.height - 80));
     this.addGameObject(new Enemy(2 * (platformWidth + gap) + 50, this.canvas.height - 80));
+
+    this.addGameObject(new Enemy2(3 * (platformWidth + gap) + 50, this.canvas.height - 80));
 
     // Create collectibles and add them to the game
     this.addGameObject(new Collectible(100, this.canvas.height - 100, 20, 20));
