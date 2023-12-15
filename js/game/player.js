@@ -8,6 +8,7 @@ import Enemy from './enemy.js';
 import Platform from './platform.js';
 import Collectible from './collectible.js';
 import ParticleSystem from '../engine/particleSystem.js';
+import Wall from './wall.js';
 
 // Defining a class Player that extends GameObject
 class Player extends GameObject {
@@ -30,6 +31,7 @@ class Player extends GameObject {
     this.isInvulnerable = false;
     this.isGamepadMovement = false;
     this.isGamepadJump = false;
+    this.hitWall = false;
   }
 
   // The update function runs every frame and contains game logic
@@ -39,40 +41,38 @@ class Player extends GameObject {
 
     this.handleGamepadInput(input);
     
-    // Handle player movement
-    if (!this.isGamepadMovement && input.isKeyDown('KeyD')) {
-      //physics.velocity.x = 300;
-      physics.acceleration.x = 300;
-      this.direction = -1;
-    } else if (!this.isGamepadMovement && input.isKeyDown('KeyA')) {
-      //physics.velocity.x = -300;
-      physics.acceleration.x = -300;
-      this.direction = 1;
-    } else if (!this.isGamepadMovement) {
-      //physics.velocity.x = 0;
-      physics.acceleration.x = 0;
-    }
-
-    // Handle player rotation
-    if (!this.isGamepadMovement && input.isKeyDown('KeyS')) {
-      this.renderer.rotation -= 3;
-    } else if (!this.isGamepadMovement && input.isKeyDown('KeyW')) {
-      this.renderer.rotation += 3;
-    }
-
-    // Handle player upward acceleration
-    if (!this.isGamepadMovement && input.isKeyDown('ArrowUp')) {
-      physics.acceleration.y = -2000;
-    } else {
-      if (physics.acceleration.y < 0) {
-        physics.acceleration.y += 100;
+      // Handle player movement
+      if (!this.isGamepadMovement && input.isKeyDown('KeyD') && !this.hitWall) {
+        //physics.velocity.x = 300;
+        physics.acceleration.x = 300;
+        this.direction = -1;
+      } else if (!this.isGamepadMovement && input.isKeyDown('KeyA') && !this.hitWall) {
+        //physics.velocity.x = -300;
+        physics.acceleration.x = -300;
+        this.direction = 1;
+      } else if (!this.isGamepadMovement) {
+        //physics.velocity.x = 0;
+        physics.acceleration.x = 0;
       }
-    }
 
-    // Handle player jumping
-    if (!this.isGamepadJump && input.isKeyDown('Space') && this.isOnPlatform) {
-      this.startJump();
-    }
+      // Handle player rotation
+      if (!this.isGamepadMovement && input.isKeyDown('KeyS') && !this.hitWall) {
+        this.renderer.rotation -= 3;
+      } else if (!this.isGamepadMovement && input.isKeyDown('KeyW') && !this.hitWall) {
+        this.renderer.rotation += 3;
+      }
+
+      // Handle player upward acceleration
+      if (!this.isGamepadMovement && input.isKeyDown('ArrowUp') && !this.hitWall) {
+        physics.acceleration.y = -2000;
+      } else {
+        physics.acceleration.y = 0;
+      }
+
+      // Handle player jumping
+      if (!this.isGamepadJump && input.isKeyDown('Space') && this.isOnPlatform) {
+        this.startJump();
+      }
 
     if (this.isJumping) {
       this.updateJump(deltaTime);
@@ -130,9 +130,50 @@ class Player extends GameObject {
       }
     }
 
+    // Handle collisions with walls
+    const walls = this.game.gameObjects.filter((obj) => obj instanceof Wall);
+    for (const wall of walls) {
+      // Check for collision on the right of the player
+      if (physics.isCollidingRight(wall.getComponent(Physics))) {
+        this.collidedWithWall();
+        physics.velocity.x *= -0.1;
+        physics.velocity.y *= 0.2;
+        physics.acceleration.x + 0;
+        this.x = wall.x - this.renderer.width;
+        console.log("Colliding on right")
+      } 
+      // Check for collision on the left of the player
+      if (physics.isCollidingLeft(wall.getComponent(Physics))) {
+        this.collidedWithWall();
+        physics.velocity.x *= -0.1;
+        physics.velocity.y *= 0.2;
+        physics.acceleration.x = 0;
+        this.x = wall.x + wall.getComponent(Renderer).width;
+        console.log("Colliding on left")
+      } 
+      // Check for collision on the top of the player
+      if (physics.isCollidingTop(wall.getComponent(Physics))) {
+        this.collidedWithWall();
+        physics.velocity.y *= -0.1;
+        physics.velocity.x *= 0.2;
+        physics.acceleration.y = 0;
+        this.y = wall.y + wall.getComponent(Renderer).height;
+        console.log("Colliding on top")
+      } 
+      // Check for collision on the bottom of the player
+      if (physics.isCollidingBottom(wall.getComponent(Physics))) {
+        this.collidedWithWall();
+        physics.velocity.y *= -0.1;
+        physics.velocity.x *= 0.2;
+        physics.acceleration.y = 0;
+        this.y = wall.y - this.renderer.height;
+        console.log("Colliding on bottom")
+      }
+    }
+
     //console.log(physics.velocity.y);
 
-    if(this.isOnPlatform)
+    if(this.isOnPlatform || this.hitWall)
     {
       physics.gravity.y = 0;
     } else {
@@ -241,9 +282,9 @@ class Player extends GameObject {
     this.emitCollectParticles(collectible);
   }
 
-  emitCollectParticles() {
-    // Create a particle system at the player's position when a collectible is collected
-    const particleSystem = new ParticleSystem(this.x, this.y, 'yellow', 20, 1, 0.5);
+  emitCollectParticles(collectible) {
+    // Create a particle system at the collectible's position when a collectible is collected
+    const particleSystem = new ParticleSystem(collectible.x, collectible.y, 'yellow', 20, 1, 0.5);
     this.game.addGameObject(particleSystem);
   }
 
@@ -264,6 +305,22 @@ class Player extends GameObject {
     this.lives = 3;
     this.score = 0;
     this.resetPlayerState();
+  }
+
+  collidedWithWall() {
+    if (!this.isInvulnerable) {
+      this.lives--;
+      this.isInvulnerable = true;
+      // Make player vulnerable again after 2 seconds
+      setTimeout(() => {
+        this.isInvulnerable = false;
+      }, 2000);
+
+      this.hitWall = true;
+      setTimeout(() => {
+        this.hitWall = false;
+      }, 500);
+    }
   }
   
 }

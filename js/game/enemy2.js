@@ -60,7 +60,7 @@ class Enemy2 extends GameObject {
     const platforms = this.game.gameObjects.filter(obj => obj instanceof Platform);
     this.isOnPlatform = false;
     for (const platform of platforms) {
-      // Check for collision on the right of the player
+      // Check for collision on the right of the enemy
       if (physics.isCollidingRight(platform.getComponent(Physics))) {
         physics.velocity.x *= -1;
         physics.acceleration.x *= -1;
@@ -68,7 +68,7 @@ class Enemy2 extends GameObject {
         this.x = platform.x - this.renderer.width;
         console.log("Colliding on right")
       } 
-      // Check for collision on the left of the player
+      // Check for collision on the left of the enemy
       if (physics.isCollidingLeft(platform.getComponent(Physics))) {
         physics.velocity.x *= -1;
         physics.acceleration.x *= -1;
@@ -76,14 +76,14 @@ class Enemy2 extends GameObject {
         this.x = platform.x + platform.getComponent(Renderer).width;
         console.log("Colliding on left")
       } 
-      // Check for collision on the top of the player
+      // Check for collision on the top of the enemy
         if (physics.isCollidingTop(platform.getComponent(Physics))) {
         physics.velocity.y *= -1;
         physics.acceleration.y *= -1;
         this.y = platform.y + platform.getComponent(Renderer).height;
         console.log("Colliding on top")
       } 
-      // Check for collision on the bottom of the player
+      // Check for collision on the bottom of the enemy
       if (physics.isCollidingBottom(platform.getComponent(Physics))) {
         physics.velocity.y *= -1;
         physics.acceleration.y *= -1;

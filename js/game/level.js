@@ -6,6 +6,7 @@ import Enemy2 from './enemy2.js';
 import PlayerUI from './playerUI.js';
 import Platform from './platform.js';
 import Collectible from './collectible.js';
+import Wall from './wall.js';
 
 // Define a class Level that extends the Game class from the engine
 class Level extends Game {
@@ -43,10 +44,17 @@ class Level extends Game {
       new Platform(9 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
       new Platform(10 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
       new Platform(5 * (platformWidth), this.canvas.height - platformWidth, 20, platformWidth),
-      new Platform(-1000, -500, 1000, 25),
+      //new Platform(-1000, -500, 1000, 25),
     ];
     for (const platform of platforms) {
       this.addGameObject(platform);
+    }
+
+    const walls = [
+      new Wall(-1000, -500, 1000, 25),
+    ];
+    for (const wall of walls) {
+      this.addGameObject(wall);
     }
 
     // Create enemies and add them to the game
