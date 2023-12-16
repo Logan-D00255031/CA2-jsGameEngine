@@ -138,7 +138,7 @@ class Player extends GameObject {
         this.collidedWithWall();
         this.leftWall = false;
         physics.velocity.x *= -0.1;
-        physics.velocity.y *= 0.2;
+        //physics.velocity.y *= 0.2;
         physics.acceleration.x + 0;
         this.x = wall.x - this.renderer.width - 1;
         console.log("Colliding on right")
@@ -148,7 +148,7 @@ class Player extends GameObject {
         this.collidedWithWall();
         this.leftWall = false;
         physics.velocity.x *= -0.1;
-        physics.velocity.y *= 0.2;
+        //physics.velocity.y *= 0.2;
         physics.acceleration.x = 0;
         this.x = wall.x + wall.getComponent(Renderer).width + 1;
         console.log("Colliding on left")
@@ -158,7 +158,7 @@ class Player extends GameObject {
         this.collidedWithWall();
         this.leftWall = false;
         physics.velocity.y *= -0.1;
-        physics.velocity.x *= 0.2;
+        //physics.velocity.x *= 0.2;
         physics.acceleration.y = 0;
         this.y = wall.y + wall.getComponent(Renderer).height + 1;
         console.log("Colliding on top")
@@ -168,7 +168,7 @@ class Player extends GameObject {
         this.collidedWithWall();
         this.leftWall = false;
         physics.velocity.y *= -0.1;
-        physics.velocity.x *= 0.2;
+        //physics.velocity.x *= 0.2;
         physics.acceleration.y = 0;
         this.y = wall.y - this.renderer.height - 1;
         console.log("Colliding on bottom")
@@ -185,7 +185,7 @@ class Player extends GameObject {
     }
   
     // Check if player has fallen off the bottom of the screen
-    if (this.y > this.game.canvas.height + 1000) {
+    if (this.y > this.game.canvas.height + 2000) {
       this.resetPlayerState();
     }
 

@@ -13,6 +13,7 @@ import {Images} from '../engine/resources.js';
 // Import the Player and Platform classes from the current directory
 import Player from './player.js';
 import Platform from './platform.js';
+import Wall from './wall.js';
 
 // Define a new class, Enemy, which extends (i.e., inherits from) GameObject
 class Enemy2 extends GameObject {
@@ -28,7 +29,7 @@ class Enemy2 extends GameObject {
     
     // Add a Physics component to this enemy, responsible for managing its physical interactions
     // Sets the initial velocity and acceleration
-    this.addComponent(new Physics({ x: 50, y: 30 }, { x: 0, y: 0 }, { x: 0, y: 0 }));
+    this.addComponent(new Physics({ x: 200, y: 100 }, { x: 0, y: 0 }, { x: 0, y: 0 }));
     
     // Initialize variables related to enemy's movement
     this.movementDistance = 0;
@@ -45,9 +46,9 @@ class Enemy2 extends GameObject {
 
     // Check if the enemy is moving to the right
     if (this.movingRight) {
-        physics.velocity.x = 50;
+        physics.velocity.x = 200;
     } else {
-        physics.velocity.x = -50;
+        physics.velocity.x = -200;
     }
 
     // Check if the enemy is colliding with the player
@@ -58,7 +59,6 @@ class Enemy2 extends GameObject {
 
     // Check if the enemy is colliding with any platforms
     const platforms = this.game.gameObjects.filter(obj => obj instanceof Platform);
-    this.isOnPlatform = false;
     for (const platform of platforms) {
       // Check for collision on the right of the enemy
       if (physics.isCollidingRight(platform.getComponent(Physics))) {
@@ -88,7 +88,41 @@ class Enemy2 extends GameObject {
         physics.velocity.y *= -1;
         physics.acceleration.y *= -1;
         this.y = platform.y - this.renderer.height;
-        this.isOnPlatform = true;
+        console.log("Colliding on bottom")
+      }
+    }
+
+    // Check if the enemy is colliding with any walls
+    const walls = this.game.gameObjects.filter(obj => obj instanceof Wall);
+    for (const wall of walls) {
+      // Check for collision on the right of the enemy
+      if (physics.isCollidingRight(wall.getComponent(Physics))) {
+        physics.velocity.x *= -1;
+        physics.acceleration.x *= -1;
+        this.movingRight = false;
+        this.x = wall.x - this.renderer.width;
+        console.log("Colliding on right")
+      } 
+      // Check for collision on the left of the enemy
+      if (physics.isCollidingLeft(wall.getComponent(Physics))) {
+        physics.velocity.x *= -1;
+        physics.acceleration.x *= -1;
+        this.movingRight = true;
+        this.x = wall.x + wall.getComponent(Renderer).width;
+        console.log("Colliding on left")
+      } 
+      // Check for collision on the top of the enemy
+        if (physics.isCollidingTop(wall.getComponent(Physics))) {
+        physics.velocity.y *= -1;
+        physics.acceleration.y *= -1;
+        this.y = wall.y + wall.getComponent(Renderer).height;
+        console.log("Colliding on top")
+      } 
+      // Check for collision on the bottom of the enemy
+      if (physics.isCollidingBottom(wall.getComponent(Physics))) {
+        physics.velocity.y *= -1;
+        physics.acceleration.y *= -1;
+        this.y = wall.y - this.renderer.height;
         console.log("Colliding on bottom")
       }
     }
