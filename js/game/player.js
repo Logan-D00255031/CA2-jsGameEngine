@@ -21,7 +21,7 @@ class Player extends GameObject {
     this.addComponent(new Input()); // Add input for handling user input
     // Initialize all the player specific properties
     this.direction = 1;
-    this.lives = 3;
+    this.lives = 5;
     this.score = 0;
     this.isOnPlatform = false;
     this.isJumping = false;
@@ -136,37 +136,41 @@ class Player extends GameObject {
       // Check for collision on the right of the player
       if (physics.isCollidingRight(wall.getComponent(Physics))) {
         this.collidedWithWall();
+        this.leftWall = false;
         physics.velocity.x *= -0.1;
         physics.velocity.y *= 0.2;
         physics.acceleration.x + 0;
-        this.x = wall.x - this.renderer.width;
+        this.x = wall.x - this.renderer.width - 1;
         console.log("Colliding on right")
       } 
       // Check for collision on the left of the player
       if (physics.isCollidingLeft(wall.getComponent(Physics))) {
         this.collidedWithWall();
+        this.leftWall = false;
         physics.velocity.x *= -0.1;
         physics.velocity.y *= 0.2;
         physics.acceleration.x = 0;
-        this.x = wall.x + wall.getComponent(Renderer).width;
+        this.x = wall.x + wall.getComponent(Renderer).width + 1;
         console.log("Colliding on left")
       } 
       // Check for collision on the top of the player
       if (physics.isCollidingTop(wall.getComponent(Physics))) {
         this.collidedWithWall();
+        this.leftWall = false;
         physics.velocity.y *= -0.1;
         physics.velocity.x *= 0.2;
         physics.acceleration.y = 0;
-        this.y = wall.y + wall.getComponent(Renderer).height;
+        this.y = wall.y + wall.getComponent(Renderer).height + 1;
         console.log("Colliding on top")
       } 
       // Check for collision on the bottom of the player
       if (physics.isCollidingBottom(wall.getComponent(Physics))) {
         this.collidedWithWall();
+        this.leftWall = false;
         physics.velocity.y *= -0.1;
         physics.velocity.x *= 0.2;
         physics.acceleration.y = 0;
-        this.y = wall.y - this.renderer.height;
+        this.y = wall.y - this.renderer.height - 1;
         console.log("Colliding on bottom")
       }
     }
