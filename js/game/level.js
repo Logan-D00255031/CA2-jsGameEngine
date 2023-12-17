@@ -7,6 +7,7 @@ import PlayerUI from './playerUI.js';
 import Platform from './platform.js';
 import Collectible from './collectible.js';
 import Wall from './wall.js';
+import GravityPlatform from './gravityPlatform.js';
 
 // Define a class Level that extends the Game class from the engine
 class Level extends Game {
@@ -43,8 +44,6 @@ class Level extends Game {
       new Platform(8 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
       new Platform(9 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
       new Platform(5 * (platformWidth), this.canvas.height - platformWidth, 20, platformWidth),
-      new Platform(-1000, 2000, 5000, 50),
-      //new Platform(-1000, -500, 1000, 25),
     ];
     for (const platform of platforms) {
       this.addGameObject(platform);
@@ -59,6 +58,13 @@ class Level extends Game {
     ];
     for (const wall of walls) {
       this.addGameObject(wall);
+    }
+
+    const gravityPlatforms = [
+      new GravityPlatform(-1000, 2000, 5000, wallWidth),
+    ];
+    for (const gravityPlatform of gravityPlatforms) {
+      this.addGameObject(gravityPlatform);
     }
 
     // Create enemies and add them to the game

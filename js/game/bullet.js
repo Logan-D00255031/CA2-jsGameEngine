@@ -17,6 +17,7 @@ import Enemy2 from './enemy.js';
 import Platform from './platform.js';
 import Wall from './wall.js';
 import ParticleSystem from '../engine/particleSystem.js';
+import GravityPlatform from './gravityPlatform.js';
 
 // Define a new class, Bullet, which extends (i.e., inherits from) GameObject
 class Bullet extends GameObject {
@@ -29,11 +30,22 @@ class Bullet extends GameObject {
         this.addComponent(new Renderer('white', 30, 30, Images.bullet, rotation));
         // Add a Physics component to this bullet, responsible for managing its physical interactions
         this.addComponent(new Physics({ x: Math.sin(rotation*Math.PI/180) * 500, y: Math.cos(rotation*Math.PI/180) * -1 * 500}, { x: 0, y: 0 }, { x: 0, y: 0 }));
+        // Initialize variables related to the bullet's movement
+        this.movementDistance = 0;
+        this.movementLimit = 1500;
     }
 
     update(deltaTime) {
         // Get the Physics component of this bullet
         const physics = this.getComponent(Physics);
+
+        if (this.movementDistance < this.movementLimit) {
+            this.movementDistance += Math.abs(physics.velocity.x) * deltaTime;
+            this.movementDistance += Math.abs(physics.velocity.y) * deltaTime;
+        } else {
+            // If it reached the limit, remove the bullet from the game
+            this.game.removeGameObject(this);
+        }
 
         // Handle collisions with platforms
         const platforms = this.game.gameObjects.filter((obj) => obj instanceof Platform);
@@ -80,6 +92,31 @@ class Bullet extends GameObject {
             } 
             // Check for collision on the bottom of the bullet
             if (physics.isCollidingBottom(wall.getComponent(Physics))) {
+                this.game.removeGameObject(this);
+                this.emitHitParticles();
+            }
+        }
+
+        // Handle collisions with gravityPlatforms
+        const gravityPlatforms = this.game.gameObjects.filter((obj) => obj instanceof GravityPlatform);
+        for (const gravityPlatform of gravityPlatforms) {
+            // Check for collision on the right of the bullet
+            if (physics.isCollidingRight(gravityPlatform.getComponent(Physics))) {
+                this.game.removeGameObject(this);
+                this.emitHitParticles();
+            } 
+            // Check for collision on the left of the bullet
+            if (physics.isCollidingLeft(gravityPlatform.getComponent(Physics))) {
+                this.game.removeGameObject(this);
+                this.emitHitParticles();
+            } 
+            // Check for collision on the top of the bullet
+                if (physics.isCollidingTop(gravityPlatform.getComponent(Physics))) {
+                this.game.removeGameObject(this);
+                this.emitHitParticles();
+            } 
+            // Check for collision on the bottom of the bullet
+            if (physics.isCollidingBottom(gravityPlatform.getComponent(Physics))) {
                 this.game.removeGameObject(this);
                 this.emitHitParticles();
             }

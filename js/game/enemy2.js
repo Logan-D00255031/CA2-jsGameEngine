@@ -15,6 +15,7 @@ import Player from './player.js';
 import Platform from './platform.js';
 import Wall from './wall.js';
 import Bullet from './bullet.js';
+import GravityPlatform from './gravityPlatform.js';
 
 // Define a new class, Enemy, which extends (i.e., inherits from) GameObject
 class Enemy2 extends GameObject {
@@ -33,8 +34,6 @@ class Enemy2 extends GameObject {
     this.addComponent(new Physics({ x: 200, y: 100 }, { x: 0, y: 0 }, { x: 0, y: 0 }));
     
     // Initialize variables related to enemy's movement
-    this.movementDistance = 0;
-    this.movementLimit = 100;
     this.movingRight = false;
   }
 
@@ -76,7 +75,7 @@ class Enemy2 extends GameObject {
         physics.acceleration.x *= -1;
         this.movingRight = false;
         this.x = platform.x - this.renderer.width;
-        console.log("Colliding on right")
+        console.log("Colliding on right");
       } 
       // Check for collision on the left of the enemy
       if (physics.isCollidingLeft(platform.getComponent(Physics))) {
@@ -84,21 +83,21 @@ class Enemy2 extends GameObject {
         physics.acceleration.x *= -1;
         this.movingRight = true;
         this.x = platform.x + platform.getComponent(Renderer).width;
-        console.log("Colliding on left")
+        console.log("Colliding on left");
       } 
       // Check for collision on the top of the enemy
         if (physics.isCollidingTop(platform.getComponent(Physics))) {
         physics.velocity.y *= -1;
         physics.acceleration.y *= -1;
         this.y = platform.y + platform.getComponent(Renderer).height;
-        console.log("Colliding on top")
+        console.log("Colliding on top");
       } 
       // Check for collision on the bottom of the enemy
       if (physics.isCollidingBottom(platform.getComponent(Physics))) {
         physics.velocity.y *= -1;
         physics.acceleration.y *= -1;
         this.y = platform.y - this.renderer.height;
-        console.log("Colliding on bottom")
+        console.log("Colliding on bottom");
       }
     }
 
@@ -111,7 +110,7 @@ class Enemy2 extends GameObject {
         physics.acceleration.x *= -1;
         this.movingRight = false;
         this.x = wall.x - this.renderer.width;
-        console.log("Colliding on right")
+        console.log("Colliding on right");
       } 
       // Check for collision on the left of the enemy
       if (physics.isCollidingLeft(wall.getComponent(Physics))) {
@@ -119,21 +118,56 @@ class Enemy2 extends GameObject {
         physics.acceleration.x *= -1;
         this.movingRight = true;
         this.x = wall.x + wall.getComponent(Renderer).width;
-        console.log("Colliding on left")
+        console.log("Colliding on left");
       } 
       // Check for collision on the top of the enemy
         if (physics.isCollidingTop(wall.getComponent(Physics))) {
         physics.velocity.y *= -1;
         physics.acceleration.y *= -1;
         this.y = wall.y + wall.getComponent(Renderer).height;
-        console.log("Colliding on top")
+        console.log("Colliding on top");
       } 
       // Check for collision on the bottom of the enemy
       if (physics.isCollidingBottom(wall.getComponent(Physics))) {
         physics.velocity.y *= -1;
         physics.acceleration.y *= -1;
         this.y = wall.y - this.renderer.height;
-        console.log("Colliding on bottom")
+        console.log("Colliding on bottom");
+      }
+    }
+
+    // Check if the enemy is colliding with any gravityPlatforms
+    const gravityPlatforms = this.game.gameObjects.filter(obj => obj instanceof GravityPlatform);
+    for (const gravityPlatform of gravityPlatforms) {
+      // Check for collision on the right of the enemy
+      if (physics.isCollidingRight(gravityPlatform.getComponent(Physics))) {
+        physics.velocity.x *= -1;
+        physics.acceleration.x *= -1;
+        this.movingRight = false;
+        this.x = gravityPlatform.x - this.renderer.width;
+        console.log("Colliding on right");
+      } 
+      // Check for collision on the left of the enemy
+      if (physics.isCollidingLeft(gravityPlatform.getComponent(Physics))) {
+        physics.velocity.x *= -1;
+        physics.acceleration.x *= -1;
+        this.movingRight = true;
+        this.x = gravityPlatform.x + gravityPlatform.getComponent(Renderer).width;
+        console.log("Colliding on left");
+      } 
+      // Check for collision on the top of the enemy
+        if (physics.isCollidingTop(gravityPlatform.getComponent(Physics))) {
+        physics.velocity.y *= -1;
+        physics.acceleration.y *= -1;
+        this.y = gravityPlatform.y + gravityPlatform.getComponent(Renderer).height;
+        console.log("Colliding on top");
+      } 
+      // Check for collision on the bottom of the enemy
+      if (physics.isCollidingBottom(gravityPlatform.getComponent(Physics))) {
+        physics.velocity.y *= -1;
+        physics.acceleration.y *= -1;
+        this.y = gravityPlatform.y - this.renderer.height;
+        console.log("Colliding on bottom");
       }
     }
 

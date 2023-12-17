@@ -107,6 +107,16 @@ class Physics extends Component {
     }
   }
 
+  // The isAffectedByGravity method checks if this game object is colliding with another game object's gravity.
+  isAffectedByGravity(otherPhysics, gravitySize) {
+    // Get the bounding boxes of both game objects.
+    const [left, right, top, bottom] = this.getBoundingBox();
+    const [otherLeft, otherRight, otherTop, otherBottom] = otherPhysics.getBoundingBox();
+
+    // Check if the bounding boxes overlap. If they do, return true. If not, return false.
+    return left < otherRight + gravitySize && right > otherLeft + -gravitySize && top < otherBottom + gravitySize && bottom > otherTop + -gravitySize;
+  }
+
 }
 
 // The Physics class is then exported as the default export of this module.

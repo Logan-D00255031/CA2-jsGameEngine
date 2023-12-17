@@ -10,6 +10,7 @@ import Collectible from './collectible.js';
 import ParticleSystem from '../engine/particleSystem.js';
 import Wall from './wall.js';
 import Bullet from './bullet.js';
+import GravityPlatform from './gravityPlatform.js';
 
 // Defining a class Player that extends GameObject
 class Player extends GameObject {
@@ -35,6 +36,7 @@ class Player extends GameObject {
     this.isGamepadJump = false;
     this.hitWall = false;
     this.bulletCooldown = false;
+    this.gravity = false;
   }
 
   // The update function runs every frame and contains game logic
@@ -59,7 +61,7 @@ class Player extends GameObject {
           physics.acceleration.x = 0;
         }
       } else {
-        if (!this.isGamepadMovement && input.isKeyDown('KeyE') && !this.hitWall) {
+        if (!this.isGamepadMovement && input.isKeyDown('ArrowUp') && !this.hitWall) {
           physics.acceleration.x = Math.sin(this.renderer.rotation*Math.PI/180) * 600;
           physics.acceleration.y = Math.cos(this.renderer.rotation*Math.PI/180) * 600 * -1;
         } else {
@@ -103,7 +105,7 @@ class Player extends GameObject {
     for (const enemy of enemies) {
       if (physics.isColliding(enemy.getComponent(Physics))) {
         this.collidedWithEnemy();
-        console.log("Collided with enemy")
+        console.log("Collided with enemy");
       }
     }
   
@@ -116,21 +118,21 @@ class Player extends GameObject {
         physics.velocity.x = 0;
         physics.acceleration.x = 0;
         this.x = platform.x - this.renderer.width;
-        console.log("Colliding on right")
+        console.log("Colliding on right");
       } 
       // Check for collision on the left of the player
       if (physics.isCollidingLeft(platform.getComponent(Physics))) {
         physics.velocity.x = 0;
         physics.acceleration.x = 0;
         this.x = platform.x + platform.getComponent(Renderer).width;
-        console.log("Colliding on left")
+        console.log("Colliding on left");
       } 
       // Check for collision on the top of the player
         if (physics.isCollidingTop(platform.getComponent(Physics))) {
         physics.velocity.y = 0;
         physics.acceleration.y = 0;
         this.y = platform.y + platform.getComponent(Renderer).height;
-        console.log("Colliding on top")
+        console.log("Colliding on top");
       } 
       // Check for collision on the bottom of the player
       if (physics.isCollidingBottom(platform.getComponent(Physics))) {
@@ -138,7 +140,7 @@ class Player extends GameObject {
         physics.acceleration.y = 0;
         this.y = platform.y - this.renderer.height;
         this.isOnPlatform = true;
-        console.log("Colliding on bottom")
+        console.log("Colliding on bottom");
       }
     }
 
@@ -153,7 +155,7 @@ class Player extends GameObject {
         //physics.velocity.y *= 0.2;
         physics.acceleration.x + 0;
         this.x = wall.x - this.renderer.width - 1;
-        console.log("Colliding on right")
+        console.log("Colliding on right");
       } 
       // Check for collision on the left of the player
       if (physics.isCollidingLeft(wall.getComponent(Physics))) {
@@ -163,7 +165,7 @@ class Player extends GameObject {
         //physics.velocity.y *= 0.2;
         physics.acceleration.x = 0;
         this.x = wall.x + wall.getComponent(Renderer).width + 1;
-        console.log("Colliding on left")
+        console.log("Colliding on left");
       } 
       // Check for collision on the top of the player
       if (physics.isCollidingTop(wall.getComponent(Physics))) {
@@ -173,7 +175,7 @@ class Player extends GameObject {
         //physics.velocity.x *= 0.2;
         physics.acceleration.y = 0;
         this.y = wall.y + wall.getComponent(Renderer).height + 1;
-        console.log("Colliding on top")
+        console.log("Colliding on top");
       } 
       // Check for collision on the bottom of the player
       if (physics.isCollidingBottom(wall.getComponent(Physics))) {
@@ -183,18 +185,59 @@ class Player extends GameObject {
         //physics.velocity.x *= 0.2;
         physics.acceleration.y = 0;
         this.y = wall.y - this.renderer.height - 1;
-        console.log("Colliding on bottom")
+        console.log("Colliding on bottom");
+      }
+    }
+
+    // Handle collisions with gravityPlatforms
+    this.gravity = false;   // Reset this before checking collisions with platforms
+    const gravityPlatforms = this.game.gameObjects.filter((obj) => obj instanceof GravityPlatform);
+    for (const gravityPlatform of gravityPlatforms) {
+      // Check for collision on the right of the player
+      if (physics.isCollidingRight(gravityPlatform.getComponent(Physics))) {
+        physics.velocity.x = 0;
+        physics.acceleration.x = 0;
+        this.x = gravityPlatform.x - this.renderer.width;
+        console.log("Colliding on right");
+      } 
+      // Check for collision on the left of the player
+      if (physics.isCollidingLeft(gravityPlatform.getComponent(Physics))) {
+        physics.velocity.x = 0;
+        physics.acceleration.x = 0;
+        this.x = gravityPlatform.x + gravityPlatform.getComponent(Renderer).width;
+        console.log("Colliding on left");
+      } 
+      // Check for collision on the top of the player
+        if (physics.isCollidingTop(gravityPlatform.getComponent(Physics))) {
+        physics.velocity.y = 0;
+        physics.acceleration.y = 0;
+        this.y = gravityPlatform.y + gravityPlatform.getComponent(Renderer).height;
+        console.log("Colliding on top");
+      } 
+      // Check for collision on the bottom of the player
+      if (physics.isCollidingBottom(gravityPlatform.getComponent(Physics))) {
+        physics.velocity.y = 0;
+        physics.acceleration.y = 0;
+        this.y = gravityPlatform.y - this.renderer.height;
+        this.isOnPlatform = true;
+        console.log("Colliding on bottom");
+      }
+      // Check if the player is within the gravityPlatform's gravity
+      if (physics.isAffectedByGravity(gravityPlatform.getComponent(Physics), 500)) {
+        this.gravity = true;
       }
     }
 
     //console.log(physics.velocity.y);
 
-    if(this.isOnPlatform || this.hitWall)
+    if(this.isOnPlatform || this.hitWall || !this.gravity)
     {
-      physics.gravity.y = 0;
+      physics.gravity.y = 10;
     } else {
       physics.gravity.y = 500;
     }
+
+    console.log(physics.gravity.y);
   
     // Check if player has fallen off the bottom of the screen
     if (this.y > this.game.canvas.height + 2000) {
