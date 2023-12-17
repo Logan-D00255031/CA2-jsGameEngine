@@ -14,6 +14,7 @@ import {Images} from '../engine/resources.js';
 import Player from './player.js';
 import Platform from './platform.js';
 import Wall from './wall.js';
+import Bullet from './bullet.js';
 
 // Define a new class, Enemy, which extends (i.e., inherits from) GameObject
 class Enemy2 extends GameObject {
@@ -25,7 +26,7 @@ class Enemy2 extends GameObject {
     
     // Add a Renderer component to this enemy, responsible for rendering it in the game.
     // The renderer uses the color 'green', dimensions 50x50, and an enemy image from the Images object
-    this.addComponent(new Renderer('green', 50, 50, Images.enemy));
+    this.addComponent(new Renderer('green', 100, 100, Images.enemy2));
     
     // Add a Physics component to this enemy, responsible for managing its physical interactions
     // Sets the initial velocity and acceleration
@@ -49,6 +50,15 @@ class Enemy2 extends GameObject {
         physics.velocity.x = 200;
     } else {
         physics.velocity.x = -200;
+    }
+
+    // Handle collisions with bullets
+    const bullets = this.game.gameObjects.filter((obj) => obj instanceof Bullet);
+    for (const bullet of bullets) {
+        if (physics.isColliding(bullet.getComponent(Physics))) {
+            this.game.removeGameObject(bullet);
+            bullet.emitHitParticles();
+        }
     }
 
     // Check if the enemy is colliding with the player

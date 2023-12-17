@@ -9,6 +9,7 @@ import Platform from './platform.js';
 import Collectible from './collectible.js';
 import ParticleSystem from '../engine/particleSystem.js';
 import Wall from './wall.js';
+import Bullet from './bullet.js';
 
 // Defining a class Player that extends GameObject
 class Player extends GameObject {
@@ -32,6 +33,7 @@ class Player extends GameObject {
     this.isGamepadMovement = false;
     this.isGamepadJump = false;
     this.hitWall = false;
+    this.bulletCooldown = false;
   }
 
   // The update function runs every frame and contains game logic
@@ -56,9 +58,9 @@ class Player extends GameObject {
       }
 
       // Handle player rotation
-      if (!this.isGamepadMovement && input.isKeyDown('KeyS') && !this.hitWall) {
+      if (!this.isGamepadMovement && input.isKeyDown('ArrowLeft') && !this.hitWall) {
         this.renderer.rotation -= 3;
-      } else if (!this.isGamepadMovement && input.isKeyDown('KeyW') && !this.hitWall) {
+      } else if (!this.isGamepadMovement && input.isKeyDown('ArrowRight') && !this.hitWall) {
         this.renderer.rotation += 3;
       }
 
@@ -70,8 +72,13 @@ class Player extends GameObject {
       }
 
       // Handle player jumping
-      if (!this.isGamepadJump && input.isKeyDown('Space') && this.isOnPlatform) {
+      if (!this.isGamepadJump && input.isKeyDown('KeyW') && this.isOnPlatform) {
         this.startJump();
+      }
+
+      // Handle player shooting
+      if (!this.isGamepadJump && input.isKeyDown('Space') && !this.bulletCooldown) {
+        this.fireBullet();
       }
 
     if (this.isJumping) {
@@ -92,6 +99,7 @@ class Player extends GameObject {
     for (const enemy of enemies) {
       if (physics.isColliding(enemy.getComponent(Physics))) {
         this.collidedWithEnemy();
+        console.log("Collided with enemy")
       }
     }
   
@@ -319,11 +327,24 @@ class Player extends GameObject {
       setTimeout(() => {
         this.isInvulnerable = false;
       }, 2000);
-
+      // Set the hit wall check to false after 0.5 seconds
       this.hitWall = true;
       setTimeout(() => {
         this.hitWall = false;
       }, 500);
+    }
+  }
+
+  fireBullet() {
+    if(!this.bulletCooldown) {
+      // Create a bullet in front of the player's position.
+      const bullet = new Bullet(this.x + this.renderer.width/2 - 5, this.y, this.renderer.rotation);
+      this.game.addGameObject(bullet);
+      // Let the player fire again after 0.2 seconds
+      this.bulletCooldown = true;
+      setTimeout(() => {
+        this.bulletCooldown = false;
+      }, 200);
     }
   }
   
