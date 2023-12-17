@@ -16,6 +16,7 @@ import Platform from './platform.js';
 import Wall from './wall.js';
 import Bullet from './bullet.js';
 import GravityPlatform from './gravityPlatform.js';
+import ParticleSystem from '../engine/particleSystem.js';
 
 // Define a new class, Enemy, which extends (i.e., inherits from) GameObject
 class Enemy2 extends GameObject {
@@ -45,6 +46,7 @@ class Enemy2 extends GameObject {
   update(deltaTime) {
     // Get the Physics component of this enemy
     const physics = this.getComponent(Physics);
+    // Get the Renderer component of this enemy
     this.renderer = this.getComponent(Renderer);
 
     // Check if the enemy is colliding with the player
@@ -160,36 +162,55 @@ class Enemy2 extends GameObject {
   }
 
   splitHorizontal(hitObject) {
+    const player = this.game.gameObjects.find(obj => obj instanceof Player);
+    player.score += 30 - (this.size * 5);
+    this.emitHitParticles();
     this.game.removeGameObject(this);
     this.size -= 1;
     const w = this.size * 25;
     const physics = hitObject.getComponent(Physics);
     this.renderer = this.getComponent(Renderer);
     if(this.size > 0) {
-      const split1 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: physics.velocity.x/1.5, y: physics.velocity.y/2 });
-      const split2 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: physics.velocity.x/1.5, y: -physics.velocity.y/2 });
+      const split1 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: physics.velocity.x/3, y: physics.velocity.y/4 });
+      const split2 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: physics.velocity.x/3, y: -physics.velocity.y/4 });
       this.game.addGameObject(split1);
       this.game.addGameObject(split2);
     }
   }
 
   splitVertical(hitObject) {
+    const player = this.game.gameObjects.find(obj => obj instanceof Player);
+    player.score += 30 - (this.size * 5);
+    this.emitHitParticles();
     this.game.removeGameObject(this);
     this.size -= 1;
     const w = this.size * 25;
     const physics = hitObject.getComponent(Physics);
     this.renderer = this.getComponent(Renderer);
     if(this.size > 0) {
-      const split1 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: physics.velocity.x/2, y: physics.velocity.y/1.5 });
-      const split2 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: -physics.velocity.x/2, y: physics.velocity.y/1.5 });
+      const split1 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: physics.velocity.x/4, y: physics.velocity.y/3 });
+      const split2 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: -physics.velocity.x/4, y: physics.velocity.y/3 });
       this.game.addGameObject(split1);
       this.game.addGameObject(split2);
     }
   }
 
+  emitHitParticles() {
+    // Get the Physics component of this enemy
+    const physics = this.getComponent(Physics);
+    // Get the Renderer component of this enemy
+    this.renderer = this.getComponent(Renderer);
 
+    // Check what direction bullet is travelling for particle gravity.
+    this.gravityX = physics.velocity.x * -0.1;
+    this.gravityY = physics.velocity.y * -0.1;
+
+    // Create a particle system at the centre of the enemy's sprite
+    const particleSystem = new ParticleSystem(this.x + this.renderer.width, this.y + this.renderer.height, 'gray', 20, 0.5, 1, { x: this.gravityX, y: this.gravityY});
+    this.game.addGameObject(particleSystem);
+  }
 
 }
 
-// Export the Enemy class as the default export of this module
+// Export the Enemy2 class as the default export of this module
 export default Enemy2;

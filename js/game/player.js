@@ -252,8 +252,8 @@ class Player extends GameObject {
 
     // Check if player has collected all collectibles
     if (this.score >= 3) {
-      console.log('You win!');
-      location.reload();
+      //console.log('You win!');
+      //location.reload();
     }
 
     // Log player position before next update
@@ -362,7 +362,7 @@ class Player extends GameObject {
 
   resetGame() {
     // Reset the game state, which includes the player's state
-    this.lives = 3;
+    this.lives = 5;
     this.score = 0;
     this.resetPlayerState();
   }

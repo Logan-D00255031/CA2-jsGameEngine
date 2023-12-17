@@ -42,22 +42,32 @@ class Level extends Game {
 
     // Create platforms and add them to the game
     const platforms = [
-      new Platform(0, this.canvas.height - 20, platformWidth, 20),
-      new Platform(platformWidth + gap, this.canvas.height - 20, platformWidth, 20),
-      new Platform(2 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
-      new Platform(3 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
-      new Platform(4 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
-      new Platform(5 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
-      new Platform(6 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
-      new Platform(7 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
-      new Platform(8 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
-      new Platform(9 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
-      new Platform(5 * (platformWidth), this.canvas.height - platformWidth, 20, platformWidth),
+      //new Platform(3 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
+      //new Platform(4 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
+      //new Platform(5 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
+      //new Platform(6 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
+      //new Platform(7 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
+      //new Platform(8 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
+      //new Platform(9 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
+      new Platform(5 * (platformWidth) - 20, this.canvas.height - platformWidth - 20, 20, platformWidth + 20),
       new Platform(gameBorderLeft/2 + gameBorderRight, gameBorderBottom - 250, 20, 150),
       new Platform(gameBorderLeft/2 + gameBorderRight, gameBorderBottom - 250, 1000, 20),
       new Platform(gameBorderLeft/2 + gameBorderRight + 150, gameBorderBottom - 100, 20, 120),
       new Platform(gameBorderLeft/2 + gameBorderRight + 1000 - 20, gameBorderBottom - 250, 20, 150),
       new Platform(gameBorderLeft/2 + gameBorderRight + 1000 - 150 - 20, gameBorderBottom - 100, 20, 120),
+      new Platform(0, this.canvas.height - 20, 1000, 20),
+      new Platform(300, this.canvas.height - 20 - 200, 450, 20),
+      new Platform(900, this.canvas.height - 20 - 200, 100, 20),
+      new Platform(300, this.canvas.height - platformWidth - 20, 20, 40),
+      new Platform(200, this.canvas.height - platformWidth, 120, 20),
+      new Platform(150, this.canvas.height - platformWidth + 20, 70, 20),
+      new Platform(100, this.canvas.height - platformWidth + 40, 70, 20),
+      new Platform(75, this.canvas.height - platformWidth + 60, 45, 20),
+      new Platform(50, this.canvas.height - platformWidth + 80, 45, 20),
+      new Platform(25, this.canvas.height - platformWidth + 100, 45, 20),
+      new Platform(0, this.canvas.height - platformWidth + 120, 45, 20),
+      new Platform(0, this.canvas.height - platformWidth + 120, 20, 70),
+      new Platform(3 * (platformWidth) - 20, this.canvas.height - 50 - 20, platformWidth * 2, 20),
     ];
     for (const platform of platforms) {
       this.addGameObject(platform);
@@ -67,6 +77,10 @@ class Level extends Game {
       new Wall(gameBorderRight, gameBorderTop, 5000, wallWidth),
       new Wall(gameBorderRight, gameBorderTop, wallWidth, 3000),
       new Wall(gameBorderLeft - wallWidth, gameBorderTop, wallWidth, 3000),
+      new Wall(2000, 0, 200, 200),
+      new Wall(3000, 800, 150, 150),
+      new Wall(-500, -500, 150, 150),
+      new Wall(500, 1200, 100, 100),
     ];
     for (const wall of walls) {
       this.addGameObject(wall);

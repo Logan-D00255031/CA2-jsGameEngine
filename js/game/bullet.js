@@ -29,7 +29,7 @@ class Bullet extends GameObject {
         // Add a Renderer component to this bullet, responsible for rendering it in the game.
         this.addComponent(new Renderer('white', 30, 30, Images.bullet, rotation));
         // Add a Physics component to this bullet, responsible for managing its physical interactions
-        this.addComponent(new Physics({ x: Math.sin(rotation*Math.PI/180) * 500, y: Math.cos(rotation*Math.PI/180) * -1 * 500}, { x: 0, y: 0 }, { x: 0, y: 0 }));
+        this.addComponent(new Physics({ x: Math.sin(rotation*Math.PI/180) * 1000, y: Math.cos(rotation*Math.PI/180) * -1 * 1000}, { x: 0, y: 0 }, { x: 0, y: 0 }));
         // Initialize variables related to the bullet's movement
         this.movementDistance = 0;
         this.movementLimit = 1500;
@@ -38,6 +38,7 @@ class Bullet extends GameObject {
     update(deltaTime) {
         // Get the Physics component of this bullet
         const physics = this.getComponent(Physics);
+        const renderer = this.getComponent(Renderer);
 
         if (this.movementDistance < this.movementLimit) {
             this.movementDistance += Math.abs(physics.velocity.x) * deltaTime;
@@ -53,29 +54,33 @@ class Bullet extends GameObject {
             // Check for collision on the right of the enemy
             if (physics.isCollidingRight(enemy.getComponent(Physics))) {
                 enemy.splitHorizontal(this);
+                this.x += renderer.width;
+                this.y += renderer.height/2;
                 this.game.removeGameObject(this);
-                this.emitHitParticles();
+                //this.emitHitParticles();
                 console.log("Colliding on right");
             } 
             // Check for collision on the left of the enemy
             if (physics.isCollidingLeft(enemy.getComponent(Physics))) {
                 enemy.splitHorizontal(this);
                 this.game.removeGameObject(this);
-                this.emitHitParticles();
+                //this.emitHitParticles();
                 console.log("Colliding on left");
             } 
             // Check for collision on the top of the enemy
             if (physics.isCollidingTop(enemy.getComponent(Physics))) {
                 enemy.splitVertical(this);
                 this.game.removeGameObject(this);
-                this.emitHitParticles();
+                //this.emitHitParticles();
                 console.log("Colliding on top");
             } 
             // Check for collision on the bottom of the enemy
             if (physics.isCollidingBottom(enemy.getComponent(Physics))) {
                 enemy.splitVertical(this);
+                this.x += renderer.width/2;
+                this.y += renderer.height;
                 this.game.removeGameObject(this);
-                this.emitHitParticles();
+                //this.emitHitParticles();
                 console.log("Colliding on bottom");
             }
         }
@@ -85,6 +90,8 @@ class Bullet extends GameObject {
         for (const platform of platforms) {
             // Check for collision on the right of the bullet
             if (physics.isCollidingRight(platform.getComponent(Physics))) {
+                this.x += renderer.width;
+                this.y += renderer.height/2;
                 this.game.removeGameObject(this);
                 this.emitHitParticles();
             } 
@@ -100,6 +107,8 @@ class Bullet extends GameObject {
             } 
             // Check for collision on the bottom of the bullet
             if (physics.isCollidingBottom(platform.getComponent(Physics))) {
+                this.x += renderer.width/2;
+                this.y += renderer.height;
                 this.game.removeGameObject(this);
                 this.emitHitParticles();
             }
@@ -110,6 +119,8 @@ class Bullet extends GameObject {
         for (const wall of walls) {
             // Check for collision on the right of the bullet
             if (physics.isCollidingRight(wall.getComponent(Physics))) {
+                this.x += renderer.width;
+                this.y += renderer.height/2;
                 this.game.removeGameObject(this);
                 this.emitHitParticles();
             } 
@@ -125,6 +136,8 @@ class Bullet extends GameObject {
             } 
             // Check for collision on the bottom of the bullet
             if (physics.isCollidingBottom(wall.getComponent(Physics))) {
+                this.x += renderer.width/2;
+                this.y += renderer.height;
                 this.game.removeGameObject(this);
                 this.emitHitParticles();
             }
@@ -135,6 +148,8 @@ class Bullet extends GameObject {
         for (const gravityPlatform of gravityPlatforms) {
             // Check for collision on the right of the bullet
             if (physics.isCollidingRight(gravityPlatform.getComponent(Physics))) {
+                this.x += renderer.width;
+                this.y += renderer.height/2;
                 this.game.removeGameObject(this);
                 this.emitHitParticles();
             } 
@@ -150,6 +165,8 @@ class Bullet extends GameObject {
             } 
             // Check for collision on the bottom of the bullet
             if (physics.isCollidingBottom(gravityPlatform.getComponent(Physics))) {
+                this.x += renderer.width/2;
+                this.y += renderer.height;
                 this.game.removeGameObject(this);
                 this.emitHitParticles();
             }
@@ -171,8 +188,8 @@ class Bullet extends GameObject {
         this.gravityX = physics.velocity.x * -0.1;
         this.gravityY = physics.velocity.y * -0.1;
 
-        // Create a particle system at the collectible's position when a collectible is collected
-        const particleSystem = new ParticleSystem(this.x, this.y, 'white', 20, 1, 0.5, { x: this.gravityX, y: this.gravityY});
+        // Create a particle system at the bullet's position
+        const particleSystem = new ParticleSystem(this.x, this.y, 'white', 20, 0.5, 0.5, { x: this.gravityX, y: this.gravityY});
         this.game.addGameObject(particleSystem);
     }
 
