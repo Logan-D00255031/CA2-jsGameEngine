@@ -21,20 +21,23 @@ import GravityPlatform from './gravityPlatform.js';
 class Enemy2 extends GameObject {
 
   // Define the constructor for this class, which takes two arguments for the x and y coordinates
-  constructor(x, y) {
+  constructor(x, y, size = 4, velocity =  { x: -200 , y: 100 }) {
     // Call the constructor of the superclass (GameObject) with the x and y coordinates
     super(x, y);
     
     // Add a Renderer component to this enemy, responsible for rendering it in the game.
     // The renderer uses the color 'green', dimensions 50x50, and an enemy image from the Images object
-    this.addComponent(new Renderer('green', 100, 100, Images.enemy2));
+    this.addComponent(new Renderer('green', size * 25, size * 25, Images.enemy2));
     
     // Add a Physics component to this enemy, responsible for managing its physical interactions
     // Sets the initial velocity and acceleration
-    this.addComponent(new Physics({ x: 200, y: 100 }, { x: 0, y: 0 }, { x: 0, y: 0 }));
+    this.addComponent(new Physics({ x: velocity.x, y: velocity.y }, { x: 0, y: 0 }, { x: 0, y: 0 }));
     
     // Initialize variables related to enemy's movement
     this.movingRight = false;
+    this.size = size;
+    //console.log(this.size);
+    //console.log(this.getComponent(Physics).velocity.x);
   }
 
   // Define an update method that will run every frame of the game. It takes deltaTime as an argument
@@ -43,22 +46,6 @@ class Enemy2 extends GameObject {
     // Get the Physics component of this enemy
     const physics = this.getComponent(Physics);
     this.renderer = this.getComponent(Renderer);
-
-    // Check if the enemy is moving to the right
-    if (this.movingRight) {
-        physics.velocity.x = 200;
-    } else {
-        physics.velocity.x = -200;
-    }
-
-    // Handle collisions with bullets
-    const bullets = this.game.gameObjects.filter((obj) => obj instanceof Bullet);
-    for (const bullet of bullets) {
-        if (physics.isColliding(bullet.getComponent(Physics))) {
-            this.game.removeGameObject(bullet);
-            bullet.emitHitParticles();
-        }
-    }
 
     // Check if the enemy is colliding with the player
     const player = this.game.gameObjects.find(obj => obj instanceof Player);
@@ -73,7 +60,6 @@ class Enemy2 extends GameObject {
       if (physics.isCollidingRight(platform.getComponent(Physics))) {
         physics.velocity.x *= -1;
         physics.acceleration.x *= -1;
-        this.movingRight = false;
         this.x = platform.x - this.renderer.width;
         console.log("Colliding on right");
       } 
@@ -81,7 +67,6 @@ class Enemy2 extends GameObject {
       if (physics.isCollidingLeft(platform.getComponent(Physics))) {
         physics.velocity.x *= -1;
         physics.acceleration.x *= -1;
-        this.movingRight = true;
         this.x = platform.x + platform.getComponent(Renderer).width;
         console.log("Colliding on left");
       } 
@@ -108,7 +93,6 @@ class Enemy2 extends GameObject {
       if (physics.isCollidingRight(wall.getComponent(Physics))) {
         physics.velocity.x *= -1;
         physics.acceleration.x *= -1;
-        this.movingRight = false;
         this.x = wall.x - this.renderer.width;
         console.log("Colliding on right");
       } 
@@ -116,7 +100,6 @@ class Enemy2 extends GameObject {
       if (physics.isCollidingLeft(wall.getComponent(Physics))) {
         physics.velocity.x *= -1;
         physics.acceleration.x *= -1;
-        this.movingRight = true;
         this.x = wall.x + wall.getComponent(Renderer).width;
         console.log("Colliding on left");
       } 
@@ -143,7 +126,6 @@ class Enemy2 extends GameObject {
       if (physics.isCollidingRight(gravityPlatform.getComponent(Physics))) {
         physics.velocity.x *= -1;
         physics.acceleration.x *= -1;
-        this.movingRight = false;
         this.x = gravityPlatform.x - this.renderer.width;
         console.log("Colliding on right");
       } 
@@ -151,7 +133,6 @@ class Enemy2 extends GameObject {
       if (physics.isCollidingLeft(gravityPlatform.getComponent(Physics))) {
         physics.velocity.x *= -1;
         physics.acceleration.x *= -1;
-        this.movingRight = true;
         this.x = gravityPlatform.x + gravityPlatform.getComponent(Renderer).width;
         console.log("Colliding on left");
       } 
@@ -173,10 +154,41 @@ class Enemy2 extends GameObject {
 
     this.oldX = this.x;
     this.oldY = this.y;
-
+    
     // Call the update method of the superclass (GameObject), passing along deltaTime
     super.update(deltaTime);
   }
+
+  splitHorizontal(hitObject) {
+    this.game.removeGameObject(this);
+    this.size -= 1;
+    const w = this.size * 25;
+    const physics = hitObject.getComponent(Physics);
+    this.renderer = this.getComponent(Renderer);
+    if(this.size > 0) {
+      const split1 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: physics.velocity.x/1.5, y: physics.velocity.y/2 });
+      const split2 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: physics.velocity.x/1.5, y: -physics.velocity.y/2 });
+      this.game.addGameObject(split1);
+      this.game.addGameObject(split2);
+    }
+  }
+
+  splitVertical(hitObject) {
+    this.game.removeGameObject(this);
+    this.size -= 1;
+    const w = this.size * 25;
+    const physics = hitObject.getComponent(Physics);
+    this.renderer = this.getComponent(Renderer);
+    if(this.size > 0) {
+      const split1 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: physics.velocity.x/2, y: physics.velocity.y/1.5 });
+      const split2 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: -physics.velocity.x/2, y: physics.velocity.y/1.5 });
+      this.game.addGameObject(split1);
+      this.game.addGameObject(split2);
+    }
+  }
+
+
+
 }
 
 // Export the Enemy class as the default export of this module

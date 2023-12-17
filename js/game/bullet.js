@@ -13,7 +13,7 @@ import {Images} from '../engine/resources.js';
 // Import the Player and Platform classes from the current directory
 import Player from './player.js';
 import Enemy from './enemy.js';
-import Enemy2 from './enemy.js';
+import Enemy2 from './enemy2.js';
 import Platform from './platform.js';
 import Wall from './wall.js';
 import ParticleSystem from '../engine/particleSystem.js';
@@ -45,6 +45,39 @@ class Bullet extends GameObject {
         } else {
             // If it reached the limit, remove the bullet from the game
             this.game.removeGameObject(this);
+        }
+
+        // Handle collisions with bullets
+        const enemies = this.game.gameObjects.filter((obj) => obj instanceof Enemy2);
+        for (const enemy of enemies) {
+            // Check for collision on the right of the enemy
+            if (physics.isCollidingRight(enemy.getComponent(Physics))) {
+                enemy.splitHorizontal(this);
+                this.game.removeGameObject(this);
+                this.emitHitParticles();
+                console.log("Colliding on right");
+            } 
+            // Check for collision on the left of the enemy
+            if (physics.isCollidingLeft(enemy.getComponent(Physics))) {
+                enemy.splitHorizontal(this);
+                this.game.removeGameObject(this);
+                this.emitHitParticles();
+                console.log("Colliding on left");
+            } 
+            // Check for collision on the top of the enemy
+            if (physics.isCollidingTop(enemy.getComponent(Physics))) {
+                enemy.splitVertical(this);
+                this.game.removeGameObject(this);
+                this.emitHitParticles();
+                console.log("Colliding on top");
+            } 
+            // Check for collision on the bottom of the enemy
+            if (physics.isCollidingBottom(enemy.getComponent(Physics))) {
+                enemy.splitVertical(this);
+                this.game.removeGameObject(this);
+                this.emitHitParticles();
+                console.log("Colliding on bottom");
+            }
         }
 
         // Handle collisions with platforms
