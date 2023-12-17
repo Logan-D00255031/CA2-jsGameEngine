@@ -28,8 +28,10 @@ Images.enemy2.src = './resources/images/enemy/enemy2.png'; // Update the image p
 Images.bullet.src = './resources/images/bullet.png'; // Update the image path
 
 const Animations = {
-  playerMove: "./resources/animations/player/move/1.png",
+  playerMove: new Image(),
 };
+
+Animations.playerMove.src = "./resources/animations/player/move/";
 
 // Export the Images and AudioFiles objects so they can be imported and used in other modules.
 export { Images, AudioFiles };

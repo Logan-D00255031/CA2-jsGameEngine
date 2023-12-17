@@ -31,6 +31,15 @@ class Level extends Game {
     const platformWidth = 200;
     const gap = 200;
 
+    // Define the sides of the game's border
+    const gameBorderTop = -1000;
+    const gameBorderBottom = 2000;
+    const gameBorderRight = -1000;
+    const gameBorderLeft = 4000;
+
+    // Define how thick the walls are
+    const wallWidth = 50;
+
     // Create platforms and add them to the game
     const platforms = [
       new Platform(0, this.canvas.height - 20, platformWidth, 20),
@@ -44,24 +53,27 @@ class Level extends Game {
       new Platform(8 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
       new Platform(9 * (platformWidth + gap), this.canvas.height - 20, platformWidth, 20),
       new Platform(5 * (platformWidth), this.canvas.height - platformWidth, 20, platformWidth),
+      new Platform(gameBorderLeft/2 + gameBorderRight, gameBorderBottom - 250, 20, 150),
+      new Platform(gameBorderLeft/2 + gameBorderRight, gameBorderBottom - 250, 1000, 20),
+      new Platform(gameBorderLeft/2 + gameBorderRight + 150, gameBorderBottom - 100, 20, 120),
+      new Platform(gameBorderLeft/2 + gameBorderRight + 1000 - 20, gameBorderBottom - 250, 20, 150),
+      new Platform(gameBorderLeft/2 + gameBorderRight + 1000 - 150 - 20, gameBorderBottom - 100, 20, 120),
     ];
     for (const platform of platforms) {
       this.addGameObject(platform);
     }
 
-    const wallWidth = 50;
-
     const walls = [
-      new Wall(-1000, -1000, 5000, wallWidth),
-      new Wall(-1000, -1000, wallWidth, 3000),
-      new Wall(4000 - wallWidth, -1000, wallWidth, 3000),
+      new Wall(gameBorderRight, gameBorderTop, 5000, wallWidth),
+      new Wall(gameBorderRight, gameBorderTop, wallWidth, 3000),
+      new Wall(gameBorderLeft - wallWidth, gameBorderTop, wallWidth, 3000),
     ];
     for (const wall of walls) {
       this.addGameObject(wall);
     }
 
     const gravityPlatforms = [
-      new GravityPlatform(-1000, 2000, 5000, wallWidth),
+      new GravityPlatform(gameBorderRight, gameBorderBottom, 5000, wallWidth),
     ];
     for (const gravityPlatform of gravityPlatforms) {
       this.addGameObject(gravityPlatform);

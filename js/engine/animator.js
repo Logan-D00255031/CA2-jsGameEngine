@@ -2,7 +2,7 @@
 import GameObject from '../engine/gameobject.js';
 import Renderer from '../engine/renderer.js';
 import Component from './component.js';
-import { Animations } from '../engine/resources.js';
+//import { Animations } from '../engine/resources.js';
 
 class Animator extends Component {
     // The constructor initializes a new instance of the Animator class.
@@ -21,7 +21,7 @@ class Animator extends Component {
 
     update(deltaTime) {
         this.deltaTime = deltaTime;
-        this.gameFPS = 1000 / deltaTime;
+        this.gameFPS = 1 / deltaTime;
         this.fpsDelay = this.gameFPS / this.fps;
     }
 
@@ -41,5 +41,7 @@ class Animator extends Component {
 
         this.renderer.image = Animations.playerMove + this.animImage + ".png";
     }
-    // this.renderer.image = null;
 }
+
+// The Animator class is then exported as the default export of this module.
+export default Animator;

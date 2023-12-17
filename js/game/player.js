@@ -11,6 +11,7 @@ import ParticleSystem from '../engine/particleSystem.js';
 import Wall from './wall.js';
 import Bullet from './bullet.js';
 import GravityPlatform from './gravityPlatform.js';
+import Animator from '../engine/animator.js';
 
 // Defining a class Player that extends GameObject
 class Player extends GameObject {
@@ -28,7 +29,7 @@ class Player extends GameObject {
     this.score = 0;
     this.isOnPlatform = false;
     this.isJumping = false;
-    this.jumpForce = 600;
+    this.jumpForce = 400;
     this.jumpTime = 0.1;
     this.jumpTimer = 0;
     this.isInvulnerable = false;
@@ -385,7 +386,7 @@ class Player extends GameObject {
   fireBullet() {
     if(!this.bulletCooldown) {
       // Create a bullet in front of the player's position.
-      const bullet = new Bullet(this.x + this.renderer.width/2 - 15, this.y - 10, this.renderer.rotation);
+      const bullet = new Bullet(this.x + (this.renderer.width/2 - 15) + Math.sin(this.renderer.rotation*Math.PI/180) * 25, this.y + (this.renderer.height/2) - 15 + (Math.cos(this.renderer.rotation*Math.PI/180) * 25 * -1), this.renderer.rotation);
       this.game.addGameObject(bullet);
       // Let the player fire again after 0.2 seconds
       this.bulletCooldown = true;
