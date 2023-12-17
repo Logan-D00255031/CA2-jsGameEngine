@@ -98,16 +98,8 @@ class Bullet extends GameObject {
         const physics = this.getComponent(Physics);
 
         // Check what direction bullet is travelling for particle gravity.
-        if(physics.velocity.x > 0) {
-            this.gravityX = -50;
-        } else {
-            this.gravityX = 50;
-        }
-        if(physics.velocity.y > 0) {
-            this.gravityY = -50;
-        } else {
-            this.gravityY = 50;
-        }
+        this.gravityX = physics.velocity.x * -0.1;
+        this.gravityY = physics.velocity.y * -0.1;
 
         // Create a particle system at the collectible's position when a collectible is collected
         const particleSystem = new ParticleSystem(this.x, this.y, 'white', 20, 1, 0.5, { x: this.gravityX, y: this.gravityY});

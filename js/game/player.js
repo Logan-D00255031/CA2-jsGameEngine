@@ -16,6 +16,7 @@ class Player extends GameObject {
   // Constructor initializes the game object and add necessary components
   constructor(x, y) {
     super(x, y); // Call parent's constructor
+    this.addComponent(new Renderer('blue', 50, 50, Images.player2, 0));
     this.renderer = new Renderer('blue', 50, 50, Images.player, 0); // Add renderer
     this.addComponent(this.renderer);
     this.addComponent(new Physics({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 })); // Add physics
@@ -341,7 +342,7 @@ class Player extends GameObject {
   fireBullet() {
     if(!this.bulletCooldown) {
       // Create a bullet in front of the player's position.
-      const bullet = new Bullet(this.x + this.renderer.width/2 - 5, this.y, this.renderer.rotation);
+      const bullet = new Bullet(this.x + this.renderer.width/2 - 15, this.y - 10, this.renderer.rotation);
       this.game.addGameObject(bullet);
       // Let the player fire again after 0.2 seconds
       this.bulletCooldown = true;
