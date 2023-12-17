@@ -44,17 +44,27 @@ class Player extends GameObject {
     this.handleGamepadInput(input);
     
       // Handle player movement
-      if (!this.isGamepadMovement && input.isKeyDown('KeyD') && !this.hitWall) {
-        //physics.velocity.x = 300;
-        physics.acceleration.x = 300;
-        this.direction = -1;
-      } else if (!this.isGamepadMovement && input.isKeyDown('KeyA') && !this.hitWall) {
-        //physics.velocity.x = -300;
-        physics.acceleration.x = -300;
-        this.direction = 1;
-      } else if (!this.isGamepadMovement) {
-        //physics.velocity.x = 0;
-        physics.acceleration.x = 0;
+      if(this.isOnPlatform) {
+        if (!this.isGamepadMovement && input.isKeyDown('KeyD') && !this.hitWall) {
+          //physics.velocity.x = 300;
+          physics.acceleration.x = 300;
+          this.direction = -1;
+        } else if (!this.isGamepadMovement && input.isKeyDown('KeyA') && !this.hitWall) {
+          //physics.velocity.x = -300;
+          physics.acceleration.x = -300;
+          this.direction = 1;
+        } else if (!this.isGamepadMovement) {
+          //physics.velocity.x = 0;
+          physics.acceleration.x = 0;
+        }
+      } else {
+        if (!this.isGamepadMovement && input.isKeyDown('KeyE') && !this.hitWall) {
+          physics.acceleration.x = Math.sin(this.renderer.rotation*Math.PI/180) * 600;
+          physics.acceleration.y = Math.cos(this.renderer.rotation*Math.PI/180) * 600 * -1;
+        } else {
+          physics.acceleration.x = 0;
+          physics.acceleration.y = 0;
+        }
       }
 
       // Handle player rotation
@@ -62,13 +72,6 @@ class Player extends GameObject {
         this.renderer.rotation -= 3;
       } else if (!this.isGamepadMovement && input.isKeyDown('ArrowRight') && !this.hitWall) {
         this.renderer.rotation += 3;
-      }
-
-      // Handle player upward acceleration
-      if (!this.isGamepadMovement && input.isKeyDown('ArrowUp') && !this.hitWall) {
-        physics.acceleration.y = -2000;
-      } else {
-        physics.acceleration.y = 0;
       }
 
       // Handle player jumping
@@ -189,7 +192,7 @@ class Player extends GameObject {
     {
       physics.gravity.y = 0;
     } else {
-      physics.gravity.y = 1000;
+      physics.gravity.y = 500;
     }
   
     // Check if player has fallen off the bottom of the screen
