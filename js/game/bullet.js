@@ -10,19 +10,19 @@ import Physics from '../engine/physics.js';
 // Import the Images object from the 'engine' directory. This object contains all the game's image resources
 import {Images} from '../engine/resources.js';
 
-// Import the Player and Platform classes from the current directory
-import Player from './player.js';
-import Enemy from './enemy.js';
+// Import the ParticleSystem class from the 'engine' directory
+import ParticleSystem from '../engine/particleSystem.js';
+
+// Import the appropriate classes from the current directory
 import Enemy2 from './enemy2.js';
 import Platform from './platform.js';
 import Wall from './wall.js';
-import ParticleSystem from '../engine/particleSystem.js';
 import GravityPlatform from './gravityPlatform.js';
 
 // Define a new class, Bullet, which extends (i.e., inherits from) GameObject
 class Bullet extends GameObject {
 
-    // Define the constructor for this class, which takes two arguments for the x and y coordinates
+    // Define the constructor for this class, which takes three arguments for the x and y coordinates and the rotation
     constructor(x, y, rotation = 0) {
         // Call the constructor of the superclass (GameObject) with the x and y coordinates
         super(x, y);
@@ -40,6 +40,7 @@ class Bullet extends GameObject {
         const physics = this.getComponent(Physics);
         const renderer = this.getComponent(Renderer);
 
+        // Check if the bullets has not reached its movement limit
         if (this.movementDistance < this.movementLimit) {
             this.movementDistance += Math.abs(physics.velocity.x) * deltaTime;
             this.movementDistance += Math.abs(physics.velocity.y) * deltaTime;
@@ -57,21 +58,18 @@ class Bullet extends GameObject {
                 this.x += renderer.width;
                 this.y += renderer.height/2;
                 this.game.removeGameObject(this);
-                //this.emitHitParticles();
                 console.log("Colliding on right");
             } 
             // Check for collision on the left of the enemy
             if (physics.isCollidingLeft(enemy.getComponent(Physics))) {
                 enemy.splitHorizontal(this);
                 this.game.removeGameObject(this);
-                //this.emitHitParticles();
                 console.log("Colliding on left");
             } 
             // Check for collision on the top of the enemy
             if (physics.isCollidingTop(enemy.getComponent(Physics))) {
                 enemy.splitVertical(this);
                 this.game.removeGameObject(this);
-                //this.emitHitParticles();
                 console.log("Colliding on top");
             } 
             // Check for collision on the bottom of the enemy
@@ -80,7 +78,6 @@ class Bullet extends GameObject {
                 this.x += renderer.width/2;
                 this.y += renderer.height;
                 this.game.removeGameObject(this);
-                //this.emitHitParticles();
                 console.log("Colliding on bottom");
             }
         }
@@ -172,7 +169,7 @@ class Bullet extends GameObject {
             }
         }
         
-        // Log player position before next update
+        // Log bullet position before next update
         // Used when handling collisions
         this.oldX = this.x;
         this.oldY = this.y;

@@ -7,7 +7,7 @@ import Physics from '../engine/physics.js';
 class Wall extends GameObject {
   
   // Define the constructor for the Wall class. It takes arguments for the x and y coordinates,
-  // width, height, and color (with a default value of 'gray' if no color is provided)
+  // width, height, and color (with a default value of 'red' if no color is provided)
   constructor(x, y, width, height, color = 'red') {
     
     // Call the constructor of the superclass (GameObject) with the x and y coordinates

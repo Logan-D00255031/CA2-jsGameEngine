@@ -11,7 +11,7 @@ import ParticleSystem from '../engine/particleSystem.js';
 import Wall from './wall.js';
 import Bullet from './bullet.js';
 import GravityPlatform from './gravityPlatform.js';
-import Animator from '../engine/animator.js';
+import Enemy2 from './enemy2.js';
 
 // Defining a class Player that extends GameObject
 class Player extends GameObject {
@@ -38,6 +38,7 @@ class Player extends GameObject {
     this.hitWall = false;
     this.bulletCooldown = false;
     this.gravity = false;
+    this.asteroidsLeft = 8;
   }
 
   // The update function runs every frame and contains game logic
@@ -45,49 +46,51 @@ class Player extends GameObject {
     const physics = this.getComponent(Physics); // Get physics component
     const input = this.getComponent(Input); // Get input component
 
-    this.handleGamepadInput(input);
+    // Gamepad input method was not updated for game
+    //this.handleGamepadInput(input);
     
-      // Handle player movement
-      if(this.isOnPlatform) {
-        if (!this.isGamepadMovement && input.isKeyDown('KeyD') && !this.hitWall) {
-          //physics.velocity.x = 300;
-          physics.acceleration.x = 300;
-          this.direction = -1;
-        } else if (!this.isGamepadMovement && input.isKeyDown('KeyA') && !this.hitWall) {
-          //physics.velocity.x = -300;
-          physics.acceleration.x = -300;
-          this.direction = 1;
-        } else if (!this.isGamepadMovement) {
-          //physics.velocity.x = 0;
-          physics.acceleration.x = 0;
-        }
+    // Handle player movement
+    // Check if player is on a platform
+    if(this.isOnPlatform) {
+      // Handle player movement for platforms
+      if (!this.isGamepadMovement && input.isKeyDown('KeyD') && !this.hitWall) {
+        physics.acceleration.x = 300;
+        this.direction = -1;
+      } else if (!this.isGamepadMovement && input.isKeyDown('KeyA') && !this.hitWall) {
+        physics.acceleration.x = -300;
+        this.direction = 1;
+      } else if (!this.isGamepadMovement) {
+        physics.acceleration.x = 0;
+      }
+    } else {
+      // If not, Handle player movement while in space
+      if (!this.isGamepadMovement && input.isKeyDown('ArrowUp') && !this.hitWall) {
+        physics.acceleration.x = Math.sin(this.renderer.rotation*Math.PI/180) * 600;
+        physics.acceleration.y = Math.cos(this.renderer.rotation*Math.PI/180) * 600 * -1;
       } else {
-        if (!this.isGamepadMovement && input.isKeyDown('ArrowUp') && !this.hitWall) {
-          physics.acceleration.x = Math.sin(this.renderer.rotation*Math.PI/180) * 600;
-          physics.acceleration.y = Math.cos(this.renderer.rotation*Math.PI/180) * 600 * -1;
-        } else {
-          physics.acceleration.x = 0;
-          physics.acceleration.y = 0;
-        }
+        physics.acceleration.x = 0;
+        physics.acceleration.y = 0;
       }
+    }
 
-      // Handle player rotation
-      if (!this.isGamepadMovement && input.isKeyDown('ArrowLeft') && !this.hitWall) {
-        this.renderer.rotation -= 3;
-      } else if (!this.isGamepadMovement && input.isKeyDown('ArrowRight') && !this.hitWall) {
-        this.renderer.rotation += 3;
-      }
+    // Handle player rotation
+    if (!this.isGamepadMovement && input.isKeyDown('ArrowLeft') && !this.hitWall) {
+      this.renderer.rotation -= 3;
+    } else if (!this.isGamepadMovement && input.isKeyDown('ArrowRight') && !this.hitWall) {
+      this.renderer.rotation += 3;
+    }
 
-      // Handle player jumping
-      if (!this.isGamepadJump && input.isKeyDown('KeyW') && this.isOnPlatform) {
-        this.startJump();
-      }
+    // Handle player jumping
+    if (!this.isGamepadJump && input.isKeyDown('KeyW') && this.isOnPlatform) {
+      this.startJump();
+    }
 
-      // Handle player shooting
-      if (!this.isGamepadJump && input.isKeyDown('Space') && !this.bulletCooldown) {
-        this.fireBullet();
-      }
+    // Handle player shooting
+    if (!this.isGamepadJump && input.isKeyDown('Space') && !this.bulletCooldown) {
+      this.fireBullet();
+    }
 
+    // Check if player is jumping
     if (this.isJumping) {
       this.updateJump(deltaTime);
     }
@@ -102,9 +105,15 @@ class Player extends GameObject {
     }
   
     // Handle collisions with enemies
-    const enemies = this.game.gameObjects.filter((obj) => obj instanceof Enemy);
+    const enemies = this.game.gameObjects.filter((obj) => obj instanceof Enemy2);
     for (const enemy of enemies) {
       if (physics.isColliding(enemy.getComponent(Physics))) {
+        const newX = enemy.getComponent(Physics).velocity.x;
+        const newY = enemy.getComponent(Physics).velocity.y;
+        enemy.getComponent(Physics).velocity.x = physics.velocity.x;
+        enemy.getComponent(Physics).velocity.y = physics.velocity.y;
+        physics.velocity.x = newX;
+        physics.velocity.y = newY;
         this.collidedWithEnemy();
         console.log("Collided with enemy");
       }
@@ -191,7 +200,7 @@ class Player extends GameObject {
     }
 
     // Handle collisions with gravityPlatforms
-    this.gravity = false;   // Reset this before checking collisions with platforms
+    this.gravity = false;   // Reset this before checking collisions with gravity platforms
     const gravityPlatforms = this.game.gameObjects.filter((obj) => obj instanceof GravityPlatform);
     for (const gravityPlatform of gravityPlatforms) {
       // Check for collision on the right of the player
@@ -229,16 +238,15 @@ class Player extends GameObject {
       }
     }
 
-    //console.log(physics.velocity.y);
-
-    if(this.isOnPlatform || this.hitWall || !this.gravity)
+    // Check if player is not affected by gravity
+    if(!this.gravity)
     {
       physics.gravity.y = 10;
     } else {
       physics.gravity.y = 500;
     }
 
-    console.log(physics.gravity.y);
+    console.log("Gravity Y: " + physics.gravity.y);
   
     // Check if player has fallen off the bottom of the screen
     if (this.y > this.game.canvas.height + 2000) {
@@ -250,26 +258,21 @@ class Player extends GameObject {
       location.reload();
     }
 
-    // Check if player has collected all collectibles
-    if (this.score >= 3) {
-      //console.log('You win!');
-      //location.reload();
+    // Check if player has destroyed all asteroids
+    if (this.asteroidsLeft <= 0) {
+      console.log('You win!');
+      location.reload();
     }
 
     // Log player position before next update
     // Used when handling collisions
     this.oldX = this.x;
     this.oldY = this.y;
-
-    //console.log(this.oldX);
-    //console.log(this.oldY);
     
     super.update(deltaTime);
-
-    //console.log(this.y);
-    //console.log(this.x);
   }
 
+  // This method has not been updated and does not have the updated control scheme as I couldn't get to test the game out with a gamepad
   handleGamepadInput(input){
     const gamepad = input.getGamepad(); // Get the gamepad input
     const physics = this.getComponent(Physics); // Get physics component
@@ -337,21 +340,23 @@ class Player extends GameObject {
 
   collect(collectible) {
     // Handle collectible pickup
-    this.score += collectible.value;
-    console.log(`Score: ${this.score}`);
+    if(this.lives < 5) {
+      this.lives += collectible.value;
+      console.log(`Health: ${this.lives}`);
+    }
     this.emitCollectParticles(collectible);
   }
 
   emitCollectParticles(collectible) {
     // Create a particle system at the collectible's position when a collectible is collected
-    const particleSystem = new ParticleSystem(collectible.x, collectible.y, 'yellow', 20, 1, 0.5);
+    const particleSystem = new ParticleSystem(collectible.x, collectible.y, 'lime', 20, 1, 0.5);
     this.game.addGameObject(particleSystem);
   }
 
   resetPlayerState() {
     // Reset the player's state, repositioning it and nullifying movement
     this.x = this.game.canvas.width / 2;
-    this.y = this.game.canvas.height / 2;
+    this.y = 1800;
     this.getComponent(Physics).velocity = { x: 0, y: 0 };
     this.getComponent(Physics).acceleration = { x: 0, y: 0 };
     this.direction = 1;
@@ -364,10 +369,12 @@ class Player extends GameObject {
     // Reset the game state, which includes the player's state
     this.lives = 5;
     this.score = 0;
+    this.asteroidsLeft = 8;
     this.resetPlayerState();
   }
 
   collidedWithWall() {
+    // Checks collision with a wall and reduce player's life if not invulnerable
     if (!this.isInvulnerable) {
       this.lives--;
       this.isInvulnerable = true;
@@ -384,8 +391,9 @@ class Player extends GameObject {
   }
 
   fireBullet() {
+    // Check if the player can fire a bullet again
     if(!this.bulletCooldown) {
-      // Create a bullet in front of the player's position.
+      // Create a bullet in front of the player's gun.
       const bullet = new Bullet(this.x + (this.renderer.width/2 - 15) + Math.sin(this.renderer.rotation*Math.PI/180) * 25, this.y + (this.renderer.height/2) - 15 + (Math.cos(this.renderer.rotation*Math.PI/180) * 25 * -1), this.renderer.rotation);
       this.game.addGameObject(bullet);
       // Let the player fire again after 0.2 seconds

@@ -4,6 +4,7 @@ import Renderer from '../engine/renderer.js';
 import Component from './component.js';
 //import { Animations } from '../engine/resources.js';
 
+// I didn't end up making this work. Any code here is unfinished and very WIP.
 class Animator extends Component {
     // The constructor initializes a new instance of the Animator class.
     constructor( name, lenght = 1, fps = 12, delay = 0) {

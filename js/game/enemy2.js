@@ -17,6 +17,7 @@ import Wall from './wall.js';
 import Bullet from './bullet.js';
 import GravityPlatform from './gravityPlatform.js';
 import ParticleSystem from '../engine/particleSystem.js';
+import Collectible from './collectible.js';
 
 // Define a new class, Enemy, which extends (i.e., inherits from) GameObject
 class Enemy2 extends GameObject {
@@ -27,7 +28,7 @@ class Enemy2 extends GameObject {
     super(x, y);
     
     // Add a Renderer component to this enemy, responsible for rendering it in the game.
-    // The renderer uses the color 'green', dimensions 50x50, and an enemy image from the Images object
+    // The renderer uses the color 'green', width and height determined by its size and an enemy image from the Images object
     this.addComponent(new Renderer('green', size * 25, size * 25, Images.enemy2));
     
     // Add a Physics component to this enemy, responsible for managing its physical interactions
@@ -35,10 +36,7 @@ class Enemy2 extends GameObject {
     this.addComponent(new Physics({ x: velocity.x, y: velocity.y }, { x: 0, y: 0 }, { x: 0, y: 0 }));
     
     // Initialize variables related to enemy's movement
-    this.movingRight = false;
     this.size = size;
-    //console.log(this.size);
-    //console.log(this.getComponent(Physics).velocity.x);
   }
 
   // Define an update method that will run every frame of the game. It takes deltaTime as an argument
@@ -48,12 +46,6 @@ class Enemy2 extends GameObject {
     const physics = this.getComponent(Physics);
     // Get the Renderer component of this enemy
     this.renderer = this.getComponent(Renderer);
-
-    // Check if the enemy is colliding with the player
-    const player = this.game.gameObjects.find(obj => obj instanceof Player);
-    if (physics.isColliding(player.getComponent(Physics))) {
-      player.collidedWithEnemy();
-    }
 
     // Check if the enemy is colliding with any platforms
     const platforms = this.game.gameObjects.filter(obj => obj instanceof Platform);
@@ -154,6 +146,8 @@ class Enemy2 extends GameObject {
       }
     }
 
+    // Log enemy position before next update
+    // Used when handling collisions
     this.oldX = this.x;
     this.oldY = this.y;
     
@@ -162,15 +156,37 @@ class Enemy2 extends GameObject {
   }
 
   splitHorizontal(hitObject) {
+    // Get the Player GameObject
     const player = this.game.gameObjects.find(obj => obj instanceof Player);
+    // Add to player score based on enemy size
     player.score += 30 - (this.size * 5);
     this.emitHitParticles();
     this.game.removeGameObject(this);
+    // Reduce enemy size
     this.size -= 1;
+    // Get width for new enemy size
     const w = this.size * 25;
+
+    // Get the Physics component of this enemy
     const physics = hitObject.getComponent(Physics);
+    // Get the Renderer component of this enemy
     this.renderer = this.getComponent(Renderer);
+
+    // Add a chance for a health collectible to spawn at enemy's centre
+    const dropHealth = Math.random() * 100;
+    console.log("drop health:" + dropHealth);
+    if(dropHealth > 70) {
+      this.game.addGameObject(new Collectible(this.x + this.renderer.width, this.y + this.renderer.height, 20, 20, "lime"));
+    }
+
+    // Reduce the asteroid count by 1
+    player.asteroidsLeft -= 1;
+
+    // Check if the enemy should split
     if(this.size > 0) {
+      // Add two more asteroids to the count
+      player.asteroidsLeft += 2;
+      // Create the new enemies with new size
       const split1 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: physics.velocity.x/3, y: physics.velocity.y/4 });
       const split2 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: physics.velocity.x/3, y: -physics.velocity.y/4 });
       this.game.addGameObject(split1);
@@ -179,15 +195,37 @@ class Enemy2 extends GameObject {
   }
 
   splitVertical(hitObject) {
+    // Get the Player GameObject
     const player = this.game.gameObjects.find(obj => obj instanceof Player);
+    // Add to player score based on enemy size
     player.score += 30 - (this.size * 5);
     this.emitHitParticles();
     this.game.removeGameObject(this);
+    // Reduce enemy size
     this.size -= 1;
+    // Get width for new enemy size
     const w = this.size * 25;
+
+    // Get the Physics component of this enemy
     const physics = hitObject.getComponent(Physics);
+    // Get the Renderer component of this enemy
     this.renderer = this.getComponent(Renderer);
+
+    // Add a chance for a health collectible to spawn at enemy's centre
+    const dropHealth = Math.random() * 100;
+    console.log("drop health:" + dropHealth);
+    if(dropHealth > 70) {
+      this.game.addGameObject(new Collectible(this.x + this.renderer.width, this.y + this.renderer.height, 20, 20, "lime"));
+    }
+
+    // Reduce the asteroid count by 1
+    player.asteroidsLeft -= 1;
+
+    // Check if the enemy should split
     if(this.size > 0) {
+      // Add two more asteroids to the count
+      player.asteroidsLeft += 2;
+      // Create the new enemies with new size
       const split1 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: physics.velocity.x/4, y: physics.velocity.y/3 });
       const split2 = new Enemy2(this.x + this.renderer.width/2 - w/2, this.y + this.renderer.height/2 - w/2, this.size, { x: -physics.velocity.x/4, y: physics.velocity.y/3 });
       this.game.addGameObject(split1);
