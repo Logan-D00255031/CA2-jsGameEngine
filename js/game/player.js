@@ -340,6 +340,7 @@ class Player extends GameObject {
 
   collect(collectible) {
     // Handle collectible pickup
+    // Add health to player if not at max
     if(this.lives < 5) {
       this.lives += collectible.value;
       console.log(`Health: ${this.lives}`);
